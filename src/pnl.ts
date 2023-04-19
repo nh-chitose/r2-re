@@ -2,7 +2,7 @@ import type OrderImpl from "./orderImpl";
 
 import _ from "lodash";
 
-import { findBrokerConfig } from "./config";
+import { findBrokerConfig } from "./config/configLoader";
 
 export function calcCommission(price: number, volume: number, commissionPercent: number): number {
   return commissionPercent !== undefined ? price * volume * (commissionPercent / 100) : 0;

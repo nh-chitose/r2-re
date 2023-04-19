@@ -1,16 +1,12 @@
-// tslint:disable
-import type { FormedConfigRootType, BrokerConfigType } from "../../src/config";
+import type { BrokerConfigType } from "../../src/config";
 import type { CashMarginType } from "../../src/types";
 
-import { options } from "@bitr/logger";
 import { expect } from "chai";
 import * as nock from "nock";
 
 import nocksetup from "./nocksetup";
 import BrokerAdapterImpl from "../../src/Coincheck/BrokerAdapterImpl";
 import { createOrder } from "../helper";
-
-options.enabled = false;
 
 nocksetup();
 

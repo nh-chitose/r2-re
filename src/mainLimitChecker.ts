@@ -7,14 +7,14 @@ import type {
   OrderPair
 } from "./types";
 
-import { getLogger } from "@bitr/logger";
 import _ from "lodash";
 
 import t from "./i18n";
+import { getLogger } from "./logger";
 import { calcProfit } from "./pnl";
 
 export default class MainLimitChecker implements LimitChecker {
-  private readonly log = getLogger(this.constructor.name);
+  private readonly logger = getLogger(this.constructor.name);
   // eslint-disable-next-line @typescript-eslint/prefer-readonly
   private limits: LimitChecker[];
 
@@ -47,7 +47,7 @@ export default class MainLimitChecker implements LimitChecker {
   check(): LimitCheckResult {
     for(const limit of this.limits){
       const result = limit.check();
-      this.log.debug(`${limit.constructor.name} ${result.success ? "passed" : "violated"}`);
+      this.logger.debug(`${limit.constructor.name} ${result.success ? "passed" : "violated"}`);
       if(!result.success){
         return result;
       }
@@ -57,7 +57,7 @@ export default class MainLimitChecker implements LimitChecker {
 }
 
 class MinExitTargetProfitLimit implements LimitChecker {
-  private readonly log = getLogger(this.constructor.name);
+  private readonly logger = getLogger(this.constructor.name);
 
   constructor(
     private readonly configStore: ConfigStore,
@@ -77,7 +77,7 @@ class MinExitTargetProfitLimit implements LimitChecker {
 
   private isExitProfitLargeEnough(): boolean {
     const effectiveValue = this.getEffectiveMinExitTargetProfit();
-    this.log.debug(`effectiveMinExitTargetProfit: ${effectiveValue}`);
+    this.logger.debug(`effectiveMinExitTargetProfit: ${effectiveValue}`);
     return this.spreadAnalysisResult.targetProfit >= effectiveValue;
   }
 

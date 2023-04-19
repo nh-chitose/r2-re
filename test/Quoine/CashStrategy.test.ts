@@ -1,11 +1,9 @@
-import { options } from "@bitr/logger";
 import { expect } from "chai";
 import * as nock from "nock";
 
 import nocksetup from "./nocksetup";
 import BrokerApi from "../../src/Quoine/BrokerApi";
 import CashStrategy from "../../src/Quoine/CashStrategy";
-options.enabled = false;
 
 describe("Quoine.CashStrategy", function(){
   this.beforeAll(() => {

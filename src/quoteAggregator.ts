@@ -2,18 +2,18 @@ import type { BrokerConfigType } from "./config";
 import type { Broker, Quote } from "./types";
 
 import { AwaitableEventEmitter } from "@bitr/awaitable-event-emitter";
-import { getLogger } from "@bitr/logger";
 import { injectable, inject } from "inversify";
 import _ from "lodash";
 import { DateTime, Interval } from "luxon";
 
 import BrokerAdapterRouter from "./brokerAdapterRouter";
+import { getLogger } from "./logger";
 import symbols from "./symbols";
 import { ConfigStore } from "./types";
 
 @injectable()
 export default class QuoteAggregator extends AwaitableEventEmitter {
-  private readonly log = getLogger(this.constructor.name);
+  private readonly logger = getLogger(this.constructor.name);
   private timer: any;
   private isRunning: boolean;
   private quotes: Quote[] = [];
@@ -26,39 +26,39 @@ export default class QuoteAggregator extends AwaitableEventEmitter {
   }
 
   async start(): Promise<void> {
-    this.log.debug("Starting Quote Aggregator...");
+    this.logger.debug("Starting Quote Aggregator...");
     const { iterationInterval } = this.configStore.config;
     this.timer = setInterval(this.aggregate.bind(this), iterationInterval);
-    this.log.debug(`Iteration interval is set to ${iterationInterval}`);
+    this.logger.debug(`Iteration interval is set to ${iterationInterval}`);
     await this.aggregate();
-    this.log.debug("Started Quote Aggregator.");
+    this.logger.debug("Started Quote Aggregator.");
   }
 
   async stop(): Promise<void> {
-    this.log.debug("Stopping Quote Aggregator...");
+    this.logger.debug("Stopping Quote Aggregator...");
     if(this.timer){
       clearInterval(this.timer);
     }
-    this.log.debug("Stopped Quote Aggregator.");
+    this.logger.debug("Stopped Quote Aggregator.");
   }
 
   private async aggregate(): Promise<void> {
     if(this.isRunning){
-      this.log.debug("Aggregator is already running. Skipped iteration.");
+      this.logger.debug("Aggregator is already running. Skipped iteration.");
       return;
     }
     try{
       this.isRunning = true;
-      this.log.debug("Aggregating quotes...");
+      this.logger.debug("Aggregating quotes...");
       const enabledBrokers = this.getEnabledBrokers();
       const fetchTasks = enabledBrokers.map(x => this.brokerAdapterRouter.fetchQuotes(x));
       const quotesMap = await Promise.all(fetchTasks);
       const allQuotes = _.flatten(quotesMap);
       await this.setQuotes(this.fold(allQuotes, this.configStore.config.priceMergeSize));
-      this.log.debug("Aggregated.");
+      this.logger.debug("Aggregated.");
     } catch(ex){
-      this.log.error(ex.message);
-      this.log.debug(ex.stack);
+      this.logger.error(ex.message);
+      this.logger.debug(ex.stack);
     } finally{
       this.isRunning = false;
     }
@@ -66,10 +66,10 @@ export default class QuoteAggregator extends AwaitableEventEmitter {
 
   private async setQuotes(value: Quote[]): Promise<void> {
     this.quotes = value;
-    this.log.debug("New quotes have been set.");
-    this.log.debug("Calling onQuoteUpdated...");
+    this.logger.debug("New quotes have been set.");
+    this.logger.debug("Calling onQuoteUpdated...");
     await this.emitParallel("quoteUpdated", this.quotes);
-    this.log.debug("onQuoteUpdated done.");
+    this.logger.debug("onQuoteUpdated done.");
   }
 
   private getEnabledBrokers(): Broker[] {
@@ -88,7 +88,7 @@ export default class QuoteAggregator extends AwaitableEventEmitter {
     const outOfPeriod = (period: any) => {
       const interval = Interval.fromISO(`${period[0]}/${period[1]}`);
       if(!interval.isValid){
-        this.log.warn("Invalid noTradePeriods. Ignoring the config.");
+        this.logger.warn("Invalid noTradePeriods. Ignoring the config.");
         return true;
       }
       return !interval.contains(current);

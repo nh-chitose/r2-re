@@ -1,4 +1,3 @@
-import { options } from "@bitr/logger";
 import { expect } from "chai";
 import * as nock from "nock";
 
@@ -6,8 +5,6 @@ import nocksetup from "./nocksetup";
 import BrokerApi from "../../src/Coincheck/BrokerApi";
 import MarginOpenStrategy from "../../src/Coincheck/MarginOpenStrategy";
 import { createOrder } from "../helper";
-
-options.enabled = false;
 
 nocksetup();
 

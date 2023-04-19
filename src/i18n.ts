@@ -1,6 +1,6 @@
 import * as i18next from "i18next";
 
-import { getConfig } from "./config";
+import { getConfig } from "./config/configLoader";
 
 const en = {
   ArbitragerThreadHasBeenStopped: "Arbitrager thread has been stopped. Please hit Enter to close this window.",

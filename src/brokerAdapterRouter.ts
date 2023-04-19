@@ -2,18 +2,18 @@ import type OrderImpl from "./orderImpl";
 import type { Broker, BrokerAdapter, BrokerMap, Order, Quote } from "./types";
 
 
-import { getLogger } from "@bitr/logger";
 import { injectable, multiInject, inject } from "inversify";
 import _ from "lodash";
 
 import BrokerStabilityTracker from "./brokerStabilityTracker";
+import { getLogger } from "./logger";
 import OrderService from "./orderService";
 import symbols from "./symbols";
 import { ConfigStore } from "./types";
 
 @injectable()
 export default class BrokerAdapterRouter {
-  private readonly log = getLogger(this.constructor.name);
+  private readonly logger = getLogger(this.constructor.name);
   private readonly brokerAdapterMap: BrokerMap<BrokerAdapter>;
 
   constructor(
@@ -26,7 +26,7 @@ export default class BrokerAdapterRouter {
   }
 
   async send(order: Order): Promise<void> {
-    this.log.debug(order.toString());
+    this.logger.debug(order.toString());
     try{
       await this.brokerAdapterMap[order.broker].send(order);
       this.orderService.emitOrderUpdated(order as OrderImpl);
@@ -37,13 +37,13 @@ export default class BrokerAdapterRouter {
   }
 
   async cancel(order: Order): Promise<void> {
-    this.log.debug(order.toString());
+    this.logger.debug(order.toString());
     await this.brokerAdapterMap[order.broker].cancel(order);
     this.orderService.emitOrderUpdated(order as OrderImpl);
   }
 
   async refresh(order: Order): Promise<void> {
-    this.log.debug(order.toString());
+    this.logger.debug(order.toString());
     await this.brokerAdapterMap[order.broker].refresh(order);
     this.orderService.emitOrderUpdated(order as OrderImpl);
   }
@@ -70,8 +70,8 @@ export default class BrokerAdapterRouter {
       return await this.brokerAdapterMap[broker].fetchQuotes();
     } catch(ex){
       this.brokerStabilityTracker.decrement(broker);
-      this.log.error(ex.message);
-      this.log.debug(ex.stack);
+      this.logger.error(ex.message);
+      this.logger.debug(ex.stack);
       return [];
     }
   }

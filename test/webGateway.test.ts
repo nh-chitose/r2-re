@@ -20,11 +20,11 @@ describe("WebGateway", () => {
 
   it("start, stop - not enabled", async () => {
     const config = { webGateway: { enabled: false } };
-    const configStore = new EventEmitter() as any;
-    configStore.config = config;
+    const JsonConfigStore = new EventEmitter() as any;
+    JsonConfigStore.config = config;
     const wg = new WebGateway(
       quoteAggregator,
-      configStore,
+      JsonConfigStore,
       positionService,
       opportunitySearcher,
       activePairStore,
@@ -39,11 +39,11 @@ describe("WebGateway", () => {
 
   it("start, stop - enabled", async () => {
     const config = { webGateway: { enabled: true }, brokers: [{ key: "key", secret: "secret" }] };
-    const configStore = new EventEmitter() as any;
-    configStore.config = config;
+    const JsonConfigStore = new EventEmitter() as any;
+    JsonConfigStore.config = config;
     const wg = new WebGateway(
       quoteAggregator,
-      configStore,
+      JsonConfigStore,
       positionService,
       opportunitySearcher,
       activePairStore,
@@ -61,11 +61,11 @@ describe("WebGateway", () => {
 
   it("emit events", async () => {
     const config = { webGateway: { enabled: true }, brokers: [{ key: "key", secret: "secret" }] };
-    const configStore = new EventEmitter() as any;
-    configStore.config = config;
+    const JsonConfigStore = new EventEmitter() as any;
+    JsonConfigStore.config = config;
     const wg = new WebGateway(
       quoteAggregator,
-      configStore,
+      JsonConfigStore,
       positionService,
       opportunitySearcher,
       activePairStore,
@@ -86,7 +86,7 @@ describe("WebGateway", () => {
       orderService.emit("orderCreated");
       orderService.emit("orderUpdated");
       orderService.emit("orderFinalized");
-      configStore.emit("configUpdated", config);
+      JsonConfigStore.emit("configUpdated", config);
       await delay(100);
     } finally{
       ws.close();
@@ -98,11 +98,11 @@ describe("WebGateway", () => {
 
   it("emit events - no ws client", async () => {
     const config = { webGateway: { enabled: true }, brokers: [{ key: "key", secret: "secret" }] };
-    const configStore = new EventEmitter() as any;
-    configStore.config = config;
+    const JsonConfigStore = new EventEmitter() as any;
+    JsonConfigStore.config = config;
     const wg = new WebGateway(
       quoteAggregator,
-      configStore,
+      JsonConfigStore,
       positionService,
       opportunitySearcher,
       activePairStore,

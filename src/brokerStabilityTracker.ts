@@ -1,5 +1,6 @@
-import type { Broker } from "./types";
+import "reflect-metadata";
 
+import type { Broker } from "./types";
 
 import { inject, injectable } from "inversify";
 import _ from "lodash";

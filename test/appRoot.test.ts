@@ -1,10 +1,7 @@
-import { options } from "@bitr/logger";
 import { expect, spy } from "chai";
 
 import AppRoot from "../src/";
 import symbols from "../src/symbols";
-
-options.enabled = false;
 
 describe("AppRoot", () => {
   it("start and stop", async () => {

@@ -1,15 +1,11 @@
 import type { BrokerConfigType } from "../../src/config";
 
-import { options } from "@bitr/logger";
 import { expect } from "chai";
 import * as nock from "nock";
 
 import nocksetup from "./nocksetup";
 import BrokerAdapterImpl from "../../src/Bitflyer/BrokerAdapterImpl";
-import { OrderStatus, CashMarginType, OrderSide, OrderType, TimeInForce } from "../../src/types";
 import { createOrder } from "../helper";
-
-options.enabled = false;
 
 nocksetup();
 

@@ -1,11 +1,9 @@
 import "reflect-metadata";
-import { options } from "@bitr/logger";
 import { expect, spy } from "chai";
 
 import { createOrder } from "./helper";
 import BrokerAdapterRouter from "../src/brokerAdapterRouter";
 import BrokerStabilityTracker from "../src/brokerStabilityTracker";
-options.enabled = false;
 
 const baBitflyer = {
   broker: "Bitflyer",

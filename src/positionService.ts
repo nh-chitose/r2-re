@@ -3,7 +3,6 @@ import type { BrokerMap, BrokerPosition } from "./types";
 
 import { EventEmitter } from "events";
 
-import { getLogger } from "@bitr/logger";
 import Decimal from "decimal.js";
 import { injectable, inject } from "inversify";
 import _ from "lodash";
@@ -11,6 +10,7 @@ import _ from "lodash";
 import BrokerAdapterRouter from "./brokerAdapterRouter";
 import BrokerStabilityTracker from "./brokerStabilityTracker";
 import t from "./i18n";
+import { getLogger } from "./logger";
 import symbols from "./symbols";
 import { ConfigStore } from "./types";
 import { hr, eRound, splitSymbol, padEnd, padStart } from "./util";
@@ -18,7 +18,7 @@ import { hr, eRound, splitSymbol, padEnd, padStart } from "./util";
 
 @injectable()
 export default class PositionService extends EventEmitter {
-  private readonly log = getLogger(this.constructor.name);
+  private readonly logger = getLogger(this.constructor.name);
   private timer: any;
   private isRefreshing: boolean;
   private _positionMap: BrokerMap<BrokerPosition>;
@@ -32,18 +32,18 @@ export default class PositionService extends EventEmitter {
   }
 
   async start(): Promise<void> {
-    this.log.debug("Starting PositionService...");
+    this.logger.debug("Starting PositionService...");
     this.timer = setInterval(() => this.refresh(), this.configStore.config.positionRefreshInterval);
     await this.refresh();
-    this.log.debug("Started PositionService.");
+    this.logger.debug("Started PositionService.");
   }
 
   async stop(): Promise<void> {
-    this.log.debug("Stopping PositionService...");
+    this.logger.debug("Stopping PositionService...");
     if(this.timer){
       clearInterval(this.timer);
     }
-    this.log.debug("Stopped PositionService.");
+    this.logger.debug("Stopped PositionService.");
   }
 
   print(): void {
@@ -54,14 +54,14 @@ export default class PositionService extends EventEmitter {
       + `${t`LongAllowed`}: ${isOk(brokerPosition.longAllowed)}, `
       + `${t`ShortAllowed`}: ${isOk(brokerPosition.shortAllowed)}`;
 
-    this.log.info({ hidden: true }, `${hr(21)}POSITION${hr(21)}`);
-    this.log.info({ hidden: true }, `Net Exposure: ${_.round(this.netExposure, 3)} ${baseCcy}`);
+    this.logger.info(`${hr(21)}POSITION${hr(21)}`);
+    this.logger.info(`Net Exposure: ${_.round(this.netExposure, 3)} ${baseCcy}`);
     _.each(this.positionMap, (position: BrokerPosition) => {
       const stability = this.brokerStabilityTracker.stability(position.broker);
-      this.log.info({ hidden: true }, `${formatBrokerPosition(position)} (Stability: ${stability})`);
+      this.logger.info(`${formatBrokerPosition(position)} (Stability: ${stability})`);
     });
-    this.log.info({ hidden: true }, hr(50));
-    this.log.debug(JSON.stringify(this.positionMap));
+    this.logger.info(hr(50));
+    this.logger.debug(JSON.stringify(this.positionMap));
   }
 
   get netExposure() {
@@ -73,9 +73,9 @@ export default class PositionService extends EventEmitter {
   }
 
   private async refresh(): Promise<void> {
-    this.log.debug("Refreshing positions...");
+    this.logger.debug("Refreshing positions...");
     if(this.isRefreshing){
-      this.log.debug("Already refreshing.");
+      this.logger.debug("Already refreshing.");
       return;
     }
     try{
@@ -90,11 +90,11 @@ export default class PositionService extends EventEmitter {
         .value();
       this.emit("positionUpdated", this.positionMap);
     } catch(ex){
-      this.log.error(ex.message);
-      this.log.debug(ex.stack);
+      this.logger.error(ex.message);
+      this.logger.debug(ex.stack);
     } finally{
       this.isRefreshing = false;
-      this.log.debug("Finished refresh.");
+      this.logger.debug("Finished refresh.");
     }
   }
 

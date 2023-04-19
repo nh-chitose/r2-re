@@ -1,13 +1,10 @@
 import type { OnSingleLegConfigType } from "../src/config/type";
 import type OrderImpl from "../src/orderImpl";
 
-import { options } from "@bitr/logger";
 import { expect, spy } from "chai";
 
 import { createOrder } from "./helper";
 import SingleLegHandler from "../src/singleLegHandler";
-
-options.enabled = false;
 
 it("handle cancel action", () => {
   const config = { action: "Cancel" } as OnSingleLegConfigType;

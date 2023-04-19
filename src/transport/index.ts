@@ -1,7 +1,5 @@
 import type { Server as httpServer } from "http";
 
-import * as fs from "fs";
-
 import express from "express";
 import _ from "lodash";
 import { mkdirp } from "mkdirp";
@@ -9,8 +7,8 @@ import WebSocket from "ws";
 
 import LineIntegration from "./LineIntegration";
 import SlackIntegration from "./SlackIntegration";
-import { pretty, splitToJson } from "./transform";
-import { getConfig } from "../config";
+import { splitToJson } from "./transform";
+import { getConfig } from "../config/configLoader";
 import { wssLogPort } from "../constants";
 
 let wss: WebSocket.Server;
@@ -36,18 +34,6 @@ try{
 } catch(ex){
   console.log(ex.message);
 }
-
-// console output
-process.stdin.pipe(pretty({ colorize: true, withLabel: false, debug: false, hidden: false })).pipe(process.stdout);
-
-// debug.log
-const debugFile = fs.createWriteStream("logs/debug.log", { flags: "a" });
-process.stdin.pipe(pretty({ colorize: false, withLabel: true, debug: true, hidden: false })).pipe(debugFile);
-
-// info.log
-const infoTransform = process.stdin.pipe(pretty({ colorize: false, withLabel: true, debug: false, hidden: false }));
-const infoFile = fs.createWriteStream("logs/info.log", { flags: "a" });
-infoTransform.pipe(infoFile);
 
 // notification integrations
 if(configRoot){
@@ -103,6 +89,6 @@ function addIntegration(
 ): void {
   if(config && config.enabled){
     const integration = new Integration(config);
-    infoTransform.on("data", line => integration.handler(line as string));
+    process.on("data", (line: string) => integration.handler(line));
   }
 }

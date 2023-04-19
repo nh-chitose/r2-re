@@ -1,7 +1,5 @@
-// tslint:disable
 import type { BrokerConfigType } from "../../src/config";
 
-import { options } from "@bitr/logger";
 import { expect } from "chai";
 import _ from "lodash";
 import nock from "nock";
@@ -9,8 +7,6 @@ import nock from "nock";
 import nocksetup from "./nocksetup";
 import BrokerAdapterImpl from "../../src/Quoine/BrokerAdapterImpl";
 import { createOrder } from "../helper";
-
-options.enabled = false;
 
 const brokerConfig = {
   broker: "Quoine",

@@ -1,10 +1,8 @@
 import type { FormedConfigRootType } from "../src/config";
 
-import { options } from "@bitr/logger";
 import { expect } from "chai";
 
-import { ConfigValidator } from "../src/config/validator";
-options.enabled = false;
+import { ConfigValidator } from "../src/config/configValidator";
 
 const config: FormedConfigRootType = require("./config_test.json");
 

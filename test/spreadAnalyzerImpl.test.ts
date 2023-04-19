@@ -1,14 +1,11 @@
 import "reflect-metadata";
 import type { ConfigStore } from "../src/types";
 
-import { options } from "@bitr/logger";
 import { expect } from "chai";
 import _ from "lodash";
 
 import SpreadAnalyzer from "../src/spreadAnalyzer";
 import { toQuote } from "../src/util";
-
-options.enabled = false;
 
 const config = require("./config_test.json");
 config.maxSize = 0.5;

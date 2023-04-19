@@ -1,4 +1,3 @@
-import { options } from "@bitr/logger";
 import { expect } from "chai";
 import { socket } from "zeromq";
 
@@ -6,8 +5,6 @@ import AnalyticsService from "../analytics/AnalyticsService";
 import { configStoreSocketUrl, reportServicePubUrl, reportServiceRepUrl } from "../src/constants";
 import { ConfigResponder, SnapshotResponder } from "../src/messages";
 import { delay } from "../src/util";
-
-options.enabled = false;
 
 describe("AnalyticsService", () => {
   it("start/stop", async () => {

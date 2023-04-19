@@ -1,12 +1,12 @@
 import type { OrderPair } from "./types";
 
-import { getLogger } from "@bitr/logger";
 import { injectable, inject } from "inversify";
 import _ from "lodash";
 
 import BrokerAdapterRouter from "./brokerAdapterRouter";
 import { LOT_MIN_DECIMAL_PLACE } from "./constants";
 import t from "./i18n";
+import { getLogger } from "./logger";
 import OrderImpl from "./orderImpl";
 import * as OrderUtil from "./orderUtil";
 import symbols from "./symbols";
@@ -15,7 +15,7 @@ import { delay, splitSymbol } from "./util";
 
 @injectable()
 export default class SingleLegHandler {
-  private readonly log = getLogger(this.constructor.name);
+  private readonly logger = getLogger(this.constructor.name);
   private readonly onSingleLegConfig;
   private readonly symbol: string;
 
@@ -53,7 +53,7 @@ export default class SingleLegHandler {
     const price = _.round(largeLeg.price * (1 + sign * options.limitMovePercent / 100));
     const size = _.floor(largeLeg.filledSize - smallLeg.filledSize, LOT_MIN_DECIMAL_PLACE);
     const { baseCcy } = splitSymbol(this.symbol);
-    this.log.info(t`ReverseFilledLeg`, OrderUtil.toShortString(largeLeg), price.toLocaleString(), size, baseCcy);
+    this.logger.info(t`ReverseFilledLeg`, OrderUtil.toShortString(largeLeg), price.toLocaleString(), size, baseCcy);
     const reversalOrder = new OrderImpl({
       symbol: this.symbol,
       broker: largeLeg.broker,
@@ -75,7 +75,7 @@ export default class SingleLegHandler {
     const price = _.round(smallLeg.price * (1 + sign * options.limitMovePercent / 100));
     const size = _.floor(smallLeg.pendingSize - largeLeg.pendingSize, LOT_MIN_DECIMAL_PLACE);
     const { baseCcy } = splitSymbol(this.symbol);
-    this.log.info(t`ExecuteUnfilledLeg`, OrderUtil.toShortString(smallLeg), price.toLocaleString(), size, baseCcy);
+    this.logger.info(t`ExecuteUnfilledLeg`, OrderUtil.toShortString(smallLeg), price.toLocaleString(), size, baseCcy);
     const proceedOrder = new OrderImpl({
       symbol: this.symbol,
       broker: smallLeg.broker,
@@ -92,18 +92,18 @@ export default class SingleLegHandler {
 
   private async sendOrderWithTtl(order: OrderImpl, ttl: number) {
     try{
-      this.log.info(t`SendingOrderTtl`, ttl);
+      this.logger.info(t`SendingOrderTtl`, ttl);
       await this.brokerAdapterRouter.send(order);
       await delay(ttl);
       await this.brokerAdapterRouter.refresh(order);
       if(order.filled){
-        this.log.info(`${OrderUtil.toExecSummary(order)}`);
+        this.logger.info(`${OrderUtil.toExecSummary(order)}`);
       }else{
-        this.log.info(t`NotFilledTtl`, ttl);
+        this.logger.info(t`NotFilledTtl`, ttl);
         await this.brokerAdapterRouter.cancel(order);
       }
     } catch(ex){
-      this.log.warn(ex.message);
+      this.logger.warn(ex.message);
     }
   }
 } /* istanbul ignore next */

@@ -6,7 +6,6 @@ import type {
   Execution } from "../src/types";
 
 import AwaitableEventEmitter from "@bitr/awaitable-event-emitter/dist/AwaitableEventEmitter";
-import { options } from "@bitr/logger";
 import { expect, spy } from "chai";
 
 import { getActivePairStore } from "../src/activePairLevelStore";
@@ -18,8 +17,6 @@ import PairTrader from "../src/pairTrader";
 import SingleLegHandler from "../src/singleLegHandler";
 import SpreadAnalyzer from "../src/spreadAnalyzer";
 import { toQuote } from "../src/util";
-
-options.enabled = false;
 
 const chronoDB = new ChronoDB(`${__dirname}/datastore/1`);
 const activePairStore = getActivePairStore(chronoDB);

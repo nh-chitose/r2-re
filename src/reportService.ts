@@ -6,12 +6,12 @@ import * as fs from "fs";
 import { promisify } from "util";
 
 
-import { getLogger } from "@bitr/logger";
 import { injectable, inject } from "inversify";
 import { Duration, DateTime } from "luxon";
 import { mkdirp } from "mkdirp";
 
 import { reportServicePubUrl, reportServiceRepUrl } from "./constants";
+import { getLogger } from "./logger";
 import { SnapshotResponder } from "./messages";
 import QuoteAggregator from "./quoteAggregator";
 import SpreadAnalyzer from "./spreadAnalyzer";
@@ -30,7 +30,7 @@ function cwd() {
 
 @injectable()
 export default class ReportService {
-  private readonly log = getLogger(this.constructor.name);
+  private readonly logger = getLogger(this.constructor.name);
   private readonly analyticsPath = `${__dirname}/analytics`;
   private readonly reportDir = `${cwd()}/reports`;
   private readonly spreadStatReport = `${this.reportDir}/spreadStat.csv`;
@@ -48,7 +48,7 @@ export default class ReportService {
   ) {}
 
   async start() {
-    this.log.debug("Starting ReportService...");
+    this.logger.debug("Starting ReportService...");
     mkdirp.sync(this.reportDir);
     if(!fs.existsSync(this.spreadStatReport)){
       await writeFile(this.spreadStatReport, spreadStatCsvHeader, { flag: "a" });
@@ -73,11 +73,11 @@ export default class ReportService {
       this.streamPublisher = new ZmqPublisher(reportServicePubUrl);
       this.analyticsProcess = fork(this.analyticsPath, [], { stdio: [0, 1, 2, "ipc"] });
     }
-    this.log.debug("Started.");
+    this.logger.debug("Started.");
   }
 
   async stop() {
-    this.log.debug("Stopping ReportService...");
+    this.logger.debug("Stopping ReportService...");
     this.quoteAggregator.removeListener("quoteUpdated", this.handlerRef);
     this.spreadStatWriteStream.close();
     if(this.analyticsProcess){
@@ -86,7 +86,7 @@ export default class ReportService {
       this.streamPublisher.dispose();
       this.snapshotResponder.dispose();
     }
-    this.log.debug("Stopped.");
+    this.logger.debug("Stopped.");
   }
 
   private async quoteUpdated(quotes: Quote[]): Promise<void> {

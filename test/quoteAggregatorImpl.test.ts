@@ -1,13 +1,10 @@
 import "reflect-metadata";
-import { options } from "@bitr/logger";
 import { expect, spy } from "chai";
 import { DateTime } from "luxon";
 
 import BrokerAdapterRouter from "../src/brokerAdapterRouter";
 import QuoteAggregator from "../src/quoteAggregator";
 import { delay } from "../src/util";
-
-options.enabled = false;
 
 const config = {
   iterationInterval: 3000,
@@ -31,11 +28,11 @@ const config = {
     },
   ],
 };
-const configStore = { config };
+const JsonConfigStore = { config };
 
 describe("Quote Aggregator", () => {
   it("folding", async () => {
-    configStore.config.iterationInterval = 10;
+    JsonConfigStore.config.iterationInterval = 10;
     const bitflyerBa = {
       broker: "Bitflyer",
       fetchQuotes: () =>
@@ -58,7 +55,7 @@ describe("Quote Aggregator", () => {
     };
     const baList = [bitflyerBa, coincheckBa, quoineBa];
     const baRouter = new (BrokerAdapterRouter as any)(baList);
-    const aggregator: QuoteAggregator = new QuoteAggregator(configStore as any, baRouter);
+    const aggregator: QuoteAggregator = new QuoteAggregator(JsonConfigStore as any, baRouter);
     let mustBeCalledCount = 0;
     const mustBeCalled = spy(() => ++mustBeCalledCount);
     aggregator.on("quoteUpdated", async quotes => {
@@ -81,12 +78,12 @@ describe("Quote Aggregator", () => {
   });
 
   it("folding with noTradePeriods", async () => {
-    configStore.config.iterationInterval = 10;
+    JsonConfigStore.config.iterationInterval = 10;
     const current = DateTime.local();
     const start = current.minus({ minutes: 5 });
     const end = current.plus({ minutes: 5 });
     // @ts-expect-error
-    configStore.config.brokers[0].noTradePeriods = [
+    JsonConfigStore.config.brokers[0].noTradePeriods = [
       [start.toLocaleString(DateTime.TIME_24_SIMPLE), end.toLocaleString(DateTime.TIME_24_SIMPLE)],
     ];
     const bitflyerBa = {
@@ -111,7 +108,7 @@ describe("Quote Aggregator", () => {
     };
     const baList = [bitflyerBa, coincheckBa, quoineBa];
     const baRouter = new (BrokerAdapterRouter as any)(baList);
-    const aggregator: QuoteAggregator = new QuoteAggregator(configStore as any, baRouter);
+    const aggregator: QuoteAggregator = new QuoteAggregator(JsonConfigStore as any, baRouter);
     let mustBeCalledCount = 0;
     const mustBeCalled = spy(() => ++mustBeCalledCount);
     aggregator.on("quoteUpdated", async quotes => {
@@ -125,12 +122,12 @@ describe("Quote Aggregator", () => {
   });
 
   it("folding with noTradePeriods -> no matching period", async () => {
-    configStore.config.iterationInterval = 10;
+    JsonConfigStore.config.iterationInterval = 10;
     const current = DateTime.local();
     const start = current.plus({ minutes: 5 });
     const end = current.plus({ minutes: 15 });
     // @ts-expect-error
-    configStore.config.brokers[0].noTradePeriods = [
+    JsonConfigStore.config.brokers[0].noTradePeriods = [
       [start.toLocaleString(DateTime.TIME_24_SIMPLE), end.toLocaleString(DateTime.TIME_24_SIMPLE)],
     ];
     const bitflyerBa = {
@@ -155,7 +152,7 @@ describe("Quote Aggregator", () => {
     };
     const baList = [bitflyerBa, coincheckBa, quoineBa];
     const baRouter = new (BrokerAdapterRouter as any)(baList);
-    const aggregator: QuoteAggregator = new QuoteAggregator(configStore as any, baRouter);
+    const aggregator: QuoteAggregator = new QuoteAggregator(JsonConfigStore as any, baRouter);
     let mustBeCalledCount = 0;
     const mustBeCalled = spy(() => ++mustBeCalledCount);
     aggregator.on("quoteUpdated", async quotes => {
@@ -169,9 +166,9 @@ describe("Quote Aggregator", () => {
   });
 
   it("folding with noTradePeriods -> invalid period", async () => {
-    configStore.config.iterationInterval = 10;
+    JsonConfigStore.config.iterationInterval = 10;
     // @ts-expect-error
-    configStore.config.brokers[0].noTradePeriods = [["00_00", "01_00"]];
+    JsonConfigStore.config.brokers[0].noTradePeriods = [["00_00", "01_00"]];
     const bitflyerBa = {
       broker: "Bitflyer",
       fetchQuotes: () =>
@@ -194,7 +191,7 @@ describe("Quote Aggregator", () => {
     };
     const baList = [bitflyerBa, coincheckBa, quoineBa];
     const baRouter = new (BrokerAdapterRouter as any)(baList);
-    const aggregator: QuoteAggregator = new QuoteAggregator(configStore as any, baRouter);
+    const aggregator: QuoteAggregator = new QuoteAggregator(JsonConfigStore as any, baRouter);
     let mustBeCalledCount = 0;
     const mustBeCalled = spy(() => ++mustBeCalledCount);
     aggregator.on("quoteUpdated", async quotes => {
@@ -208,7 +205,7 @@ describe("Quote Aggregator", () => {
   });
 
   it("folding when a broker is disabled", async () => {
-    configStore.config.iterationInterval = 11;
+    JsonConfigStore.config.iterationInterval = 11;
     config.brokers[0].enabled = false;
     const bitflyerBa = {
       broker: "Bitflyer",
@@ -232,7 +229,7 @@ describe("Quote Aggregator", () => {
     };
     const baList = [bitflyerBa, coincheckBa, quoineBa];
     const baRouter = new (BrokerAdapterRouter as any)(baList);
-    const aggregator: QuoteAggregator = new QuoteAggregator(configStore as any, baRouter);
+    const aggregator: QuoteAggregator = new QuoteAggregator(JsonConfigStore as any, baRouter);
     let mustBeCalledCount = 0;
     const mustBeCalled = spy(() => ++mustBeCalledCount);
     aggregator.on("quoteUpdated", async quotes => {
@@ -246,7 +243,7 @@ describe("Quote Aggregator", () => {
   });
 
   it("onQuoteUpdated", async () => {
-    configStore.config.iterationInterval = 12;
+    JsonConfigStore.config.iterationInterval = 12;
     const bitflyerBa = {
       broker: "Bitflyer",
       fetchQuotes: () =>
@@ -265,7 +262,7 @@ describe("Quote Aggregator", () => {
     };
     const baList = [bitflyerBa, quoineBa, coincheckBa];
     const baRouter = new (BrokerAdapterRouter as any)(baList);
-    const aggregator: QuoteAggregator = new QuoteAggregator(configStore as any, baRouter);
+    const aggregator: QuoteAggregator = new QuoteAggregator(JsonConfigStore as any, baRouter);
     let fnCalledCount = 0;
     // eslint-disable-next-line no-void
     const fn = spy(async () => void ++fnCalledCount);
@@ -277,7 +274,7 @@ describe("Quote Aggregator", () => {
   });
 
   it("onQuoteUpdated without event handler", async () => {
-    configStore.config.iterationInterval = 12;
+    JsonConfigStore.config.iterationInterval = 12;
     const bitflyerBa = {
       broker: "Bitflyer",
       fetchQuotes: () =>
@@ -296,14 +293,14 @@ describe("Quote Aggregator", () => {
     };
     const baList = [bitflyerBa, quoineBa, coincheckBa];
     const baRouter = new (BrokerAdapterRouter as any)(baList);
-    const aggregator: QuoteAggregator = new QuoteAggregator(configStore as any, baRouter);
+    const aggregator: QuoteAggregator = new QuoteAggregator(JsonConfigStore as any, baRouter);
     await aggregator.start();
     await delay(0);
     await aggregator.stop();
   });
 
   it("when already running", async () => {
-    configStore.config.iterationInterval = 12;
+    JsonConfigStore.config.iterationInterval = 12;
     const bitflyerBa = {
       broker: "Bitflyer",
       fetchQuotes: () => Promise.resolve([]),
@@ -318,7 +315,7 @@ describe("Quote Aggregator", () => {
     };
     const baList = [bitflyerBa, quoineBa, coincheckBa];
     const baRouter = new (BrokerAdapterRouter as any)(baList);
-    const aggregator: QuoteAggregator = new QuoteAggregator(configStore as any, baRouter);
+    const aggregator: QuoteAggregator = new QuoteAggregator(JsonConfigStore as any, baRouter);
     aggregator["isRunning"] = true;
     await aggregator.start();
     await aggregator.stop();
@@ -326,7 +323,7 @@ describe("Quote Aggregator", () => {
   });
 
   it("fetchQuotes throws", async () => {
-    configStore.config.iterationInterval = 12;
+    JsonConfigStore.config.iterationInterval = 12;
     const bitflyerBa = {
       broker: "Bitflyer",
       fetchQuotes: () => Promise.resolve([]),
@@ -343,7 +340,7 @@ describe("Quote Aggregator", () => {
     };
     const baList = [bitflyerBa, quoineBa, coincheckBa];
     const baRouter = new (BrokerAdapterRouter as any)(baList);
-    const aggregator: QuoteAggregator = new QuoteAggregator(configStore as any, baRouter);
+    const aggregator: QuoteAggregator = new QuoteAggregator(JsonConfigStore as any, baRouter);
     await aggregator.start();
     await aggregator.stop();
     expect(aggregator["quotes"].length).to.equal(0);
@@ -351,6 +348,6 @@ describe("Quote Aggregator", () => {
 });
 
 it("stop without start", () => {
-  const aggregator = new QuoteAggregator(configStore as any, [] as any);
+  const aggregator = new QuoteAggregator(JsonConfigStore as any, [] as any);
   aggregator.stop();
 });

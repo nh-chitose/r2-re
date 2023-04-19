@@ -7,16 +7,16 @@ import type {
   Quote
 } from "../types";
 
-import { getLogger } from "@bitr/logger";
 import _ from "lodash";
 
 import "dotenv/config";
 import BrokerApi from "./BrokerApi";
+import { getLogger } from "../logger";
 import { eRound, toExecution } from "../util";
 
 export default class BrokerAdapterImpl implements BrokerAdapter {
   private readonly brokerApi: BrokerApi;
-  private readonly log = getLogger("Bitflyer.BrokerAdapter");
+  private readonly logger = getLogger("Bitflyer.BrokerAdapter");
   readonly broker = "Bitflyer";
 
   constructor(private readonly config: BrokerConfigType) {
@@ -42,7 +42,7 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
     const childOrder = reply[0];
     if(childOrder === undefined){
       const message = `Unable to find ${orderId}. GetOrderState failed.`;
-      this.log.warn(message);
+      this.logger.warn(message);
       return;
     }
 

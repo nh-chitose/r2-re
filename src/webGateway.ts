@@ -9,7 +9,6 @@ import type {
 } from "./types";
 import type * as http from "http";
 
-import { getLogger } from "@bitr/logger";
 import { autobind } from "core-decorators";
 import express from "express";
 import { injectable, inject } from "inversify";
@@ -17,6 +16,7 @@ import _ from "lodash";
 import WebSocket from "ws";
 
 import { wssPort } from "./constants";
+import { getLogger } from "./logger";
 import OppotunitySearcher from "./opportunitySearcher";
 import OrderService from "./orderService";
 import PositionService from "./positionService";
@@ -36,7 +36,7 @@ export default class WebGateway {
   private server: http.Server;
   private app: express.Express;
   private wss: WebSocket.Server;
-  private readonly log = getLogger(this.constructor.name);
+  private readonly logger = getLogger(this.constructor.name);
   private readonly clients: WebSocket[] = [];
   private readonly staticPath: string = `${process.cwd()}/webui/dist`;
 
@@ -67,7 +67,7 @@ export default class WebGateway {
     }
 
     const host = _.defaultTo(webGateway.host, "localhost");
-    this.log.debug(`Starting ${this.constructor.name}...`);
+    this.logger.debug(`Starting ${this.constructor.name}...`);
     for(const e of this.eventMapper){
       e[0].on(e[1], e[2]);
     }
@@ -77,19 +77,19 @@ export default class WebGateway {
       res.sendFile(`${this.staticPath}/index.html`);
     });
     this.server = this.app.listen(wssPort, host, () => {
-      this.log.debug(`Express started listening on ${wssPort}.`);
+      this.logger.debug(`Express started listening on ${wssPort}.`);
     });
     this.wss = new WebSocket.Server({ server: this.server });
     this.wss.on("connection", ws => {
       ws.on("error", err => {
-        this.log.debug(err.message);
+        this.logger.debug(err.message);
       });
       this.clients.push(ws);
     });
     if(webGateway.openBrowser){
       opn(`http://${host}:${wssPort}`);
     }
-    this.log.debug(`Started ${this.constructor.name}.`);
+    this.logger.debug(`Started ${this.constructor.name}.`);
   }
 
   async stop() {
@@ -98,13 +98,13 @@ export default class WebGateway {
       return;
     }
 
-    this.log.debug(`Stopping ${this.constructor.name}...`);
+    this.logger.debug(`Stopping ${this.constructor.name}...`);
     this.wss.close();
     this.server.close();
     for(const e of this.eventMapper){
       e[0].removeListener(e[1], e[2]);
     }
-    this.log.debug(`Stopped ${this.constructor.name}.`);
+    this.logger.debug(`Stopped ${this.constructor.name}.`);
   }
 
   private async quoteUpdated(quotes: Quote[]): Promise<void> {
@@ -154,7 +154,7 @@ export default class WebGateway {
       if(client.readyState === WebSocket.OPEN){
         client.send(JSON.stringify({ type, body }), err => {
           if(err){
-            this.log.debug(err.message);
+            this.logger.debug(err.message);
             _.pull(this.clients, client);
           }
         });

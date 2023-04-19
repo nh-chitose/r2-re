@@ -1,10 +1,10 @@
 import "reflect-metadata";
-import type { BrokerConfigType, FormedConfigRootType } from "./";
+import type { BrokerConfigType, FormedConfigRootType } from ".";
 
 import { injectable } from "inversify";
 import _ from "lodash";
 
-import { findBrokerConfig } from "./";
+import { findBrokerConfig } from "./configLoader";
 import t from "../i18n";
 
 @injectable()

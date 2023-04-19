@@ -8,13 +8,13 @@ import type {
 
 import { EventEmitter } from "events";
 
-import { getLogger } from "@bitr/logger";
 import { injectable, inject } from "inversify";
 import _ from "lodash";
 
 import { LOT_MIN_DECIMAL_PLACE } from "./constants";
 import t from "./i18n";
 import LimitCheckerFactory from "./limitCheckerFactory";
+import { getLogger } from "./logger";
 import * as OrderUtil from "./orderUtil";
 import { calcProfit } from "./pnl";
 import PositionService from "./positionService";
@@ -28,7 +28,7 @@ import { padEnd, formatQuote } from "./util";
 
 @injectable()
 export default class OppotunitySearcher extends EventEmitter {
-  private readonly log = getLogger(this.constructor.name);
+  private readonly logger = getLogger(this.constructor.name);
 
   constructor(
     @inject(symbols.ConfigStore) private readonly configStore: ConfigStore,
@@ -47,12 +47,12 @@ export default class OppotunitySearcher extends EventEmitter {
   async search(
     quotes: Quote[]
   ): Promise<{ found: false } | { found: true, spreadAnalysisResult: SpreadAnalysisResult, closable: boolean }> {
-    this.log.info(t`LookingForOpportunity`);
+    this.logger.info(t`LookingForOpportunity`);
     const { closable, key: closablePairKey, exitAnalysisResult } = await this.findClosable(quotes);
     if(closable){
-      this.log.info(t`FoundClosableOrders`);
+      this.logger.info(t`FoundClosableOrders`);
       const spreadAnalysisResult = exitAnalysisResult;
-      this.log.debug(`Deleting key ${closablePairKey}.`);
+      this.logger.debug(`Deleting key ${closablePairKey}.`);
       await this.activePairStore.del(closablePairKey);
       return { found: true, spreadAnalysisResult, closable };
     }
@@ -64,17 +64,17 @@ export default class OppotunitySearcher extends EventEmitter {
       const limitCheckResult = this.limitCheckerFactory.create(spreadAnalysisResult).check();
       if(!limitCheckResult.success){
         this.status = limitCheckResult.reason;
-        this.log.info(limitCheckResult.message);
+        this.logger.info(limitCheckResult.message);
         this.emit("limitCheckDone", limitCheckResult);
         return { found: false };
       }
-      this.log.info(t`FoundArbitrageOppotunity`);
+      this.logger.info(t`FoundArbitrageOppotunity`);
       this.emit("limitCheckDone", { ...limitCheckResult, message: t`FoundArbitrageOppotunity` });
       return { found: true, spreadAnalysisResult, closable };
     } catch(ex){
       this.status = "Spread analysis failed";
-      this.log.warn(t`FailedToGetASpreadAnalysisResult`, ex.message);
-      this.log.debug(ex.stack);
+      this.logger.warn(t`FailedToGetASpreadAnalysisResult`, ex.message);
+      this.logger.debug(ex.stack);
       return { found: false };
     }
   }
@@ -88,7 +88,7 @@ export default class OppotunitySearcher extends EventEmitter {
     }
     const activePairsMap = await this.activePairStore.getAll();
     if(activePairsMap.length > 0){
-      this.log.info({ hidden: true }, t`OpenPairs`);
+      this.logger.info(t`OpenPairs`);
       const pairsWithSummary = await Promise.all(
         activePairsMap.map(async (kv): Promise<PairWithSummary> => {
           const { key, value: pair } = kv;
@@ -100,13 +100,13 @@ export default class OppotunitySearcher extends EventEmitter {
             );
             return { key, pair, pairSummary: this.getPairSummary(pair, exitAnalysisResult), exitAnalysisResult };
           } catch(ex){
-            this.log.debug(ex.message);
+            this.logger.debug(ex.message);
             return { key, pair, pairSummary: this.getPairSummary(pair) };
           }
         })
       );
       this.emit("activePairRefresh", pairsWithSummary);
-      pairsWithSummary.forEach(x => this.log.info({ hidden: true }, this.formatPairSummary(x.pair, x.pairSummary)));
+      pairsWithSummary.forEach(x => this.logger.info(this.formatPairSummary(x.pair, x.pairSummary)));
       for(const pairWithSummary of pairsWithSummary.filter(x => x.exitAnalysisResult !== undefined)){
         const limitChecker = this.limitCheckerFactory.create(
           pairWithSummary.exitAnalysisResult,
@@ -163,13 +163,12 @@ export default class OppotunitySearcher extends EventEmitter {
 
   private printSpreadAnalysisResult(result: SpreadAnalysisResult) {
     const columnWidth = 17;
-    this.log.info({ hidden: true }, "%s: %s", padEnd(t`BestAsk`, columnWidth), formatQuote(result.ask));
-    this.log.info({ hidden: true }, "%s: %s", padEnd(t`BestBid`, columnWidth), formatQuote(result.bid));
-    this.log.info({ hidden: true }, "%s: %s", padEnd(t`Spread`, columnWidth), -result.invertedSpread);
-    this.log.info({ hidden: true }, "%s: %s", padEnd(t`AvailableVolume`, columnWidth), result.availableVolume);
-    this.log.info({ hidden: true }, "%s: %s", padEnd(t`TargetVolume`, columnWidth), result.targetVolume);
-    this.log.info(
-      { hidden: true },
+    this.logger.info("%s: %s", padEnd(t`BestAsk`, columnWidth), formatQuote(result.ask));
+    this.logger.info("%s: %s", padEnd(t`BestBid`, columnWidth), formatQuote(result.bid));
+    this.logger.info("%s: %s", padEnd(t`Spread`, columnWidth), -result.invertedSpread);
+    this.logger.info("%s: %s", padEnd(t`AvailableVolume`, columnWidth), result.availableVolume);
+    this.logger.info("%s: %s", padEnd(t`TargetVolume`, columnWidth), result.targetVolume);
+    this.logger.info(
       "%s: %s (%s%%)",
       padEnd(t`ExpectedProfit`, columnWidth),
       result.targetProfit,

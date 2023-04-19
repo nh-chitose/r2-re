@@ -2,7 +2,7 @@ import * as fs from "fs";
 
 import { expect, spy } from "chai";
 
-import { getConfig } from "../src/config";
+import { getConfig } from "../src/config/configLoader";
 
 let existsSyncCount = 0;
 const originalExistsSync = fs.existsSync;

@@ -1,12 +1,9 @@
-// tslint:disable:max-line-length
 import type { RequestInit } from "node-fetch";
 
-import { options } from "@bitr/logger";
 import { expect } from "chai";
 import nock from "nock";
 
 import WebClient from "../src/webClient";
-options.enabled = false;
 
 const baseUrl = "http://local";
 const mocky = nock(baseUrl);

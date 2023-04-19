@@ -2,7 +2,6 @@ import "reflect-metadata";
 import type { FormedConfigRootType } from "../src/config";
 import type { Socket } from "zeromq";
 
-import { options } from "@bitr/logger";
 import { expect } from "chai";
 import _ from "lodash";
 import { socket } from "zeromq";
@@ -11,9 +10,6 @@ import { JsonConfigStore } from "../src/config";
 import { configStoreSocketUrl } from "../src/constants";
 import { ConfigRequester } from "../src/messages";
 import { delay } from "../src/util";
-
-
-options.enabled = false;
 
 function parseBuffer<T>(buffer: Buffer): T | undefined {
   try{

@@ -1,9 +1,8 @@
 import type { AnalyticsConfigType } from "../config";
 import type { SpreadStat } from "../types";
 
-import { getLogger } from "@bitr/logger";
-
 import { reportServicePubUrl, reportServiceRepUrl, configStoreSocketUrl } from "../constants";
+import { getLogger } from "../logger";
 import { SnapshotRequester, ConfigRequester } from "../messages";
 import ZmqSubscriber from "../zmq/ZmqSubscriber";
 
@@ -14,7 +13,7 @@ export interface SpreadStatHandlerPlugin {
 export default class AnalyticsService {
   private config: AnalyticsConfigType;
   private isHandling: boolean;
-  private readonly log = getLogger(this.constructor.name);
+  private readonly logger = getLogger(this.constructor.name);
   private readonly pluginDir = `${process.cwd()}/plugins`;
   private readonly streamSubscriber: ZmqSubscriber;
   private readonly snapshotRequester: SnapshotRequester;
@@ -28,7 +27,7 @@ export default class AnalyticsService {
   }
 
   async start(): Promise<void> {
-    this.log.debug("Starting AnalyticsService");
+    this.logger.debug("Starting AnalyticsService");
     this.config = await this.getConfig();
     const snapshotMessage = await this.snapshotRequester.request({ type: "spreadStatSnapshot" });
     if(!snapshotMessage.success || snapshotMessage.data === undefined){
@@ -38,25 +37,25 @@ export default class AnalyticsService {
     this.streamSubscriber.subscribe<SpreadStat>("spreadStat", message => this.handleStream(message));
     process.on("message", message => {
       if(message === "stop"){
-        this.log.info("Analysis process received stop message.");
-        this.stop().catch(this.log.error.bind(this.log));
+        this.logger.info("Analysis process received stop message.");
+        this.stop().catch(this.logger.error.bind(this.logger));
       }
     });
-    this.log.debug("Started.");
+    this.logger.debug("Started.");
   }
 
   async stop(): Promise<void> {
-    this.log.debug("Stopping AnalyticsService...");
+    this.logger.debug("Stopping AnalyticsService...");
     try{
       this.streamSubscriber.unsubscribe("spreadStat");
       this.streamSubscriber.dispose();
       this.snapshotRequester.dispose();
       this.configRequester.dispose();
     } catch(ex){
-      this.log.warn(ex.message);
-      this.log.debug(ex.stack);
+      this.logger.warn(ex.message);
+      this.logger.debug(ex.stack);
     }
-    this.log.debug("Stopped.");
+    this.logger.debug("Stopped.");
   }
 
   private async getConfig(): Promise<AnalyticsConfigType> {
@@ -78,18 +77,18 @@ export default class AnalyticsService {
     }
     try{
       this.isHandling = true;
-      this.log.debug("Received spread-stat message.");
+      this.logger.debug("Received spread-stat message.");
       if(spreadStat){
         const config = await this.spreadStatHandler.handle(spreadStat);
         if(config){
-          this.log.debug(`Sending to config store... ${JSON.stringify(config)}`);
+          this.logger.debug(`Sending to config store... ${JSON.stringify(config)}`);
           const reply = await this.configRequester.request({ type: "set", data: config });
-          this.log.debug(`Reply from config store: ${JSON.stringify(reply)}`);
+          this.logger.debug(`Reply from config store: ${JSON.stringify(reply)}`);
         }
       }
     } catch(ex){
-      this.log.warn(`${ex.message}`);
-      this.log.debug(ex.stack);
+      this.logger.warn(`${ex.message}`);
+      this.logger.debug(ex.stack);
     } finally{
       this.isHandling = false;
     }

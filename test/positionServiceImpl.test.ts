@@ -1,14 +1,10 @@
 import "reflect-metadata";
-import { options } from "@bitr/logger";
 import { expect } from "chai";
-import * as _ from "lodash";
+import _ from "lodash";
 
 import BrokerStabilityTracker from "../src/brokerStabilityTracker";
 import PositionService from "../src/positionService";
 import { delay } from "../src/util";
-
-
-options.enabled = false;
 
 const config = {
   symbol: "BTC/JPY",
@@ -30,15 +26,15 @@ const config = {
   ],
 };
 
-const configStore = { config };
+const JsonConfigStore = { config };
 const baRouter = {
   getPositions: (broker: any) => broker === "Quoine" ? new Map([["BTC", 0.2]]) : new Map([["BTC", -0.3]]),
 };
-const bst = new BrokerStabilityTracker(configStore as any);
+const bst = new BrokerStabilityTracker(JsonConfigStore as any);
 
 describe("Position Service", () => {
   it("positions", async () => {
-    const ps = new PositionService(configStore as any, baRouter as any, bst as any);
+    const ps = new PositionService(JsonConfigStore as any, baRouter as any, bst as any);
     await ps.start();
     const positions = _.values(ps.positionMap);
     const exposure = ps.netExposure;
@@ -66,7 +62,7 @@ describe("Position Service", () => {
         throw new Error("Mock refresh error.");
       },
     };
-    const ps = new PositionService(configStore as any, baRouterThrows as any, bst as any);
+    const ps = new PositionService(JsonConfigStore as any, baRouterThrows as any, bst as any);
     await ps.start();
     expect(ps.positionMap).to.equal(undefined);
     expect(ps.netExposure).to.equal(0);
@@ -77,7 +73,7 @@ describe("Position Service", () => {
     const localBaRouter = {
       getPositions: (broker: any) => broker === "Quoine" ? new Map([["BTC", 0.000002]]) : new Map([["BTC", -0.3]]),
     };
-    const ps = new PositionService(configStore as any, localBaRouter as any, bst as any);
+    const ps = new PositionService(JsonConfigStore as any, localBaRouter as any, bst as any);
     await ps.start();
     const positions = _.values(ps.positionMap);
     const exposure = ps.netExposure;
@@ -101,7 +97,7 @@ describe("Position Service", () => {
 
   it("already refreshing block", async () => {
     config.positionRefreshInterval = 1;
-    const ps = new PositionService(configStore as any, baRouter as any, bst as any);
+    const ps = new PositionService(JsonConfigStore as any, baRouter as any, bst as any);
     ps["isRefreshing"] = true;
     await ps.start();
     await ps.stop();
@@ -110,7 +106,7 @@ describe("Position Service", () => {
 
   it("setInterval triggered", async () => {
     config.positionRefreshInterval = 10;
-    const ps = new PositionService(configStore as any, baRouter as any, bst as any);
+    const ps = new PositionService(JsonConfigStore as any, baRouter as any, bst as any);
     await ps.start();
     await delay(10);
     await ps.stop();
@@ -119,7 +115,7 @@ describe("Position Service", () => {
   });
 
   it("stop without start", async () => {
-    const ps = new PositionService(configStore as any, baRouter as any, bst as any);
+    const ps = new PositionService(JsonConfigStore as any, baRouter as any, bst as any);
     ps.stop();
   });
 
@@ -144,12 +140,12 @@ describe("Position Service", () => {
       ],
     };
 
-    const localConfigStore = { config: localConfig };
+    const localJsonConfigStore = { config: localConfig };
     const localBaRouter = {
       getPositions: (broker: any) => broker === "Quoine" ? new Map([["BTC", 0.2]]) : new Map([["BTC", -0.3]]),
     };
-    const localBst = new BrokerStabilityTracker(localConfigStore as any);
-    const ps = new PositionService(localConfigStore as any, localBaRouter as any, localBst as any);
+    const localBst = new BrokerStabilityTracker(localJsonConfigStore as any);
+    const ps = new PositionService(localJsonConfigStore as any, localBaRouter as any, localBst as any);
     await ps.start();
     const positions = _.values(ps.positionMap);
     expect(positions.length).to.equal(0);

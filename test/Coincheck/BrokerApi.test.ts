@@ -1,12 +1,9 @@
-import { options } from "@bitr/logger";
 import { expect } from "chai";
 import _ from "lodash";
 import nock from "nock";
 
 import nocksetup from "./nocksetup";
 import BrokerApi from "../../src/Coincheck/BrokerApi";
-
-options.enabled = false;
 
 nocksetup();
 

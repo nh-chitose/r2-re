@@ -1,6 +1,5 @@
 import type { NewOrderRequest } from "../../src/Coincheck/types";
 
-import { options } from "@bitr/logger";
 import { expect, spy } from "chai";
 import * as nock from "nock";
 
@@ -8,8 +7,6 @@ import nocksetup from "./nocksetup";
 import BrokerApi from "../../src/Coincheck/BrokerApi";
 import NetOutStrategy from "../../src/Coincheck/NetOutStrategy";
 import { createOrder } from "../helper";
-
-options.enabled = false;
 
 nocksetup();
 

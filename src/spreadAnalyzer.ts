@@ -9,21 +9,21 @@ import type {
 } from "./types";
 
 
-import { getLogger } from "@bitr/logger";
 import Decimal from "decimal.js";
 import { injectable, inject } from "inversify";
 import _ from "lodash";
 
-import { findBrokerConfig } from "./config";
+import { findBrokerConfig } from "./config/configLoader";
 import { LOT_MIN_DECIMAL_PLACE } from "./constants";
 import t from "./i18n";
+import { getLogger } from "./logger";
 import { calcCommission } from "./pnl";
 import symbols from "./symbols";
 import { ConfigStore } from "./types";
 
 @injectable()
 export default class SpreadAnalyzer {
-  private readonly log = getLogger(this.constructor.name);
+  private readonly logger = getLogger(this.constructor.name);
 
   constructor(@inject(symbols.ConfigStore) private readonly configStore: ConfigStore) {}
 
@@ -91,7 +91,7 @@ export default class SpreadAnalyzer {
       targetProfit,
       profitPercentAgainstNotional,
     };
-    this.log.debug(`Analysis done. Result: ${JSON.stringify(spreadAnalysisResult)}`);
+    this.logger.debug(`Analysis done. Result: ${JSON.stringify(spreadAnalysisResult)}`);
     return spreadAnalysisResult;
   }
 

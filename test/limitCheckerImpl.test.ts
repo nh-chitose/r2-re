@@ -1,8 +1,6 @@
-import { options } from "@bitr/logger";
 import { expect } from "chai";
 
 import MainLimitChecker from "../src/mainLimitChecker";
-options.enabled = false;
 
 describe("MainLimitChecker", () => {
   it("MaxTargetVolumeLimit - violate", () => {

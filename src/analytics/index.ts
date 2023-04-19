@@ -1,6 +1,6 @@
-import { getLogger } from "@bitr/logger";
-
 import AnalyticsService from "./AnalyticsService";
+import { getLogger } from "../logger";
+
 
 const log = getLogger("analytics");
 let analyticsService: AnalyticsService;

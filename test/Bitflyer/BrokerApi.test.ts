@@ -1,12 +1,8 @@
-// tslint:disable
-import { options } from "@bitr/logger";
 import { expect } from "chai";
 import * as nock from "nock";
 
 import nocksetup from "./nocksetup";
 import BrokerApi from "../../src/Bitflyer/BrokerApi";
-
-options.enabled = false;
 
 nocksetup();
 

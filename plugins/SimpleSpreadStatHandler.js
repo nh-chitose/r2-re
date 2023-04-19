@@ -41,7 +41,7 @@ class SimpleSpreadStatHandler {
     if (_.isNaN(minTargetProfitPercent)) {
       return undefined;
     }
-    this.log.info(
+    this.logger.info(
       `μ: ${_.round(mean, precision)}, σ: ${_.round(
         standardDeviation,
         precision

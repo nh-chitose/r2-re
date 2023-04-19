@@ -6,13 +6,13 @@ import type {
 
 import { EventEmitter } from "events";
 
-import { getLogger } from "@bitr/logger";
 import { injectable, inject } from "inversify";
 import _ from "lodash";
 
 import BrokerAdapterRouter from "./brokerAdapterRouter";
-import { findBrokerConfig } from "./config";
+import { findBrokerConfig } from "./config/configLoader";
 import t from "./i18n";
+import { getLogger } from "./logger";
 import OrderImpl from "./orderImpl";
 import * as OrderUtil from "./orderUtil";
 import { calcProfit } from "./pnl";
@@ -26,7 +26,7 @@ import { delay, formatQuote } from "./util";
 
 @injectable()
 export default class PairTrader extends EventEmitter {
-  private readonly log = getLogger(this.constructor.name);
+  private readonly logger = getLogger(this.constructor.name);
 
   constructor(
     @inject(symbols.ConfigStore) private readonly configStore: ConfigStore,
@@ -53,26 +53,26 @@ export default class PairTrader extends EventEmitter {
     const { config } = this.configStore;
     for(const i of _.range(1, config.maxRetryCount + 1)){
       await delay(config.orderStatusCheckInterval);
-      this.log.info(t`OrderCheckAttempt`, i);
-      this.log.info(t`CheckingIfBothLegsAreDoneOrNot`);
+      this.logger.info(t`OrderCheckAttempt`, i);
+      this.logger.info(t`CheckingIfBothLegsAreDoneOrNot`);
       try{
         const refreshTasks = orders.map(o => this.brokerAdapterRouter.refresh(o));
         await Promise.all(refreshTasks);
       } catch(ex){
-        this.log.warn(ex.message);
-        this.log.debug(ex.stack);
+        this.logger.warn(ex.message);
+        this.logger.debug(ex.stack);
       }
 
       this.printOrderSummary(orders);
 
       if(orders.every(o => o.filled)){
-        this.log.info(t`BothLegsAreSuccessfullyFilled`);
+        this.logger.info(t`BothLegsAreSuccessfullyFilled`);
         if(closable){
           this.status = "Closed";
         }else{
           this.status = "Filled";
           if(orders[0].size === orders[1].size){
-            this.log.debug(`Putting pair ${JSON.stringify(orders)}.`);
+            this.logger.debug(`Putting pair ${JSON.stringify(orders)}.`);
             await this.activePairStore.put(orders as OrderPair);
           }
         }
@@ -82,7 +82,7 @@ export default class PairTrader extends EventEmitter {
 
       if(i === config.maxRetryCount){
         this.status = "MaxRetryCount breached";
-        this.log.warn(t`MaxRetryCountReachedCancellingThePendingOrders`);
+        this.logger.warn(t`MaxRetryCountReachedCancellingThePendingOrders`);
         const cancelTasks = orders.filter(o => !o.filled).map(o => this.brokerAdapterRouter.cancel(o));
         await Promise.all(cancelTasks);
         if(
@@ -100,7 +100,7 @@ export default class PairTrader extends EventEmitter {
   }
 
   private async sendOrder(quote: Quote, targetVolume: number, orderType: OrderType): Promise<OrderImpl> {
-    this.log.info(t`SendingOrderTargettingQuote`, formatQuote(quote));
+    this.logger.info(t`SendingOrderTargettingQuote`, formatQuote(quote));
     const brokerConfig = findBrokerConfig(quote.broker);
     const { config } = this.configStore;
     const { cashMarginType, leverageLevel } = brokerConfig;
@@ -128,18 +128,18 @@ export default class PairTrader extends EventEmitter {
   private printOrderSummary(orders: OrderImpl[]) {
     orders.forEach(o => {
       if(o.filled){
-        this.log.info(OrderUtil.toExecSummary(o));
+        this.logger.info(OrderUtil.toExecSummary(o));
       }else{
-        this.log.warn(OrderUtil.toExecSummary(o));
+        this.logger.warn(OrderUtil.toExecSummary(o));
       }
     });
   }
 
   private printProfit(orders: OrderImpl[]): void {
     const { profit, commission } = calcProfit(orders);
-    this.log.info(t`ProfitIs`, _.round(profit));
+    this.logger.info(t`ProfitIs`, _.round(profit));
     if(commission !== 0){
-      this.log.info(t`CommissionIs`, _.round(commission));
+      this.logger.info(t`CommissionIs`, _.round(commission));
     }
   }
 } /* istanbul ignore next */

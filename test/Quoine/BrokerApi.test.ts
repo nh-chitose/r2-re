@@ -1,14 +1,9 @@
-// tslint:disable:object-literal-key-quotes
-// tslint:disable:max-line-length
-import { options } from "@bitr/logger";
 import { expect } from "chai";
-import * as _ from "lodash";
+import _ from "lodash";
 import * as nock from "nock";
 
 import nocksetup from "./nocksetup";
 import BrokerApi from "../../src/Quoine/BrokerApi";
-
-options.enabled = false;
 
 nocksetup();
 

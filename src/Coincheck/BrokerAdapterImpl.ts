@@ -8,7 +8,6 @@ import type {
 } from "../types";
 import type { CashMarginType } from "../types";
 
-import { getLogger } from "@bitr/logger";
 import { addMinutes } from "date-fns";
 import _ from "lodash";
 import "dotenv/config";
@@ -17,11 +16,12 @@ import BrokerApi from "./BrokerApi";
 import CashStrategy from "./CashStrategy";
 import MarginOpenStrategy from "./MarginOpenStrategy";
 import NetOutStrategy from "./NetOutStrategy";
+import { getLogger } from "../logger";
 import { eRound, almostEqual, toExecution, toQuote } from "../util";
 
 export default class BrokerAdapterImpl implements BrokerAdapter {
   private readonly brokerApi: BrokerApi;
-  private readonly log = getLogger("Coincheck.BrokerAdapter");
+  private readonly logger = getLogger("Coincheck.BrokerAdapter");
   readonly broker = "Coincheck";
   readonly strategyMap: Map<CashMarginType, CashMarginTypeStrategy>;
 
@@ -99,7 +99,7 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
       x => x.order_id === order.brokerOrderId
     );
     if(transactions.length === 0){
-      this.log.warn("The order is not found in pending orders and historical orders.");
+      this.logger.warn("The order is not found in pending orders and historical orders.");
       return;
     }
     order.executions = transactions.map(x => {

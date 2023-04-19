@@ -1,11 +1,11 @@
 import type { Quote } from "./types";
 
-import { getLogger } from "@bitr/logger";
 import { injectable, inject } from "inversify";
 import _ from "lodash";
 
 import { fatalErrors } from "./constants";
 import t from "./i18n";
+import { getLogger } from "./logger";
 import OpportunitySearcher from "./opportunitySearcher";
 import PairTrader from "./pairTrader";
 import PositionService from "./positionService";
@@ -16,7 +16,7 @@ import { hr, delay } from "./util";
 
 @injectable()
 export default class Arbitrager {
-  private readonly log = getLogger(this.constructor.name);
+  private readonly logger = getLogger(this.constructor.name);
   private shouldStop: boolean = false;
   status: string = "Init";
   private handlerRef: (quotes: Quote[]) => Promise<void>;
@@ -34,18 +34,18 @@ export default class Arbitrager {
 
   async start(): Promise<void> {
     this.status = "Starting";
-    this.log.info(t`StartingArbitrager`);
+    this.logger.info(t`StartingArbitrager`);
     this.handlerRef = this.quoteUpdated.bind(this);
     this.quoteAggregator.on("quoteUpdated", this.handlerRef);
     this.status = "Started";
-    this.log.info(t`StartedArbitrager`);
+    this.logger.info(t`StartedArbitrager`);
   }
 
   async stop(): Promise<void> {
     this.status = "Stopping";
-    this.log.info("Stopping Arbitrager...");
+    this.logger.info("Stopping Arbitrager...");
     this.quoteAggregator.removeListener("quoteUpdated", this.handlerRef);
-    this.log.info("Stopped Arbitrager.");
+    this.logger.info("Stopped Arbitrager.");
     this.status = "Stopped";
     this.shouldStop = true;
   }
@@ -56,9 +56,9 @@ export default class Arbitrager {
       return;
     }
     this.positionService.print();
-    this.log.info({ hidden: true }, `${hr(20)}ARBITRAGER${hr(20)}`);
+    this.logger.info(`${hr(20)}ARBITRAGER${hr(20)}`);
     await this.arbitrage(quotes);
-    this.log.info({ hidden: true }, hr(50));
+    this.logger.info(hr(50));
   }
 
   private async arbitrage(quotes: Quote[]): Promise<void> {
@@ -72,14 +72,14 @@ export default class Arbitrager {
       await this.pairTrader.trade(searchResult.spreadAnalysisResult, searchResult.closable);
     } catch(ex){
       this.status = "Order send/refresh failed";
-      this.log.error(ex.message);
-      this.log.debug(ex.stack);
+      this.logger.error(ex.message);
+      this.logger.debug(ex.stack);
       if(_.some(fatalErrors, keyword => _.includes(ex.message, keyword))){
         this.shouldStop = true;
       }
     }
 
-    this.log.info(t`SleepingAfterSend`, this.configStore.config.sleepAfterSend);
+    this.logger.info(t`SleepingAfterSend`, this.configStore.config.sleepAfterSend);
     await delay(this.configStore.config.sleepAfterSend);
   }
 } /* istanbul ignore next */
