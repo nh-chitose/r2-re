@@ -41,11 +41,12 @@
               ],
               "optimization": true,
               "outputHashing": "all",
-              "sourceMap": false,
+              "sourceMap": true,
               "namedChunks": false,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
+              "watch": false,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
