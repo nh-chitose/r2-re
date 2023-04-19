@@ -12,7 +12,6 @@ on:
       - README.md
       - .github/**
       - .vscode/**
-      - src/transport/**
       - test/**
   pull_request:
   workflow_dispatch:
@@ -78,6 +77,41 @@ jobs:
       - name: Build
         run: npm run build
         
+  lint-webui:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3.6.0
+        with:
+          node-version: '20.x'
+
+      - name: Get npm cache directory
+        id: npm-cache
+        run: |
+          echo "dir=$(npm config get cache)" >> $GITHUB_OUTPUT
+      - name: Check npm cache
+        uses: actions/cache/restore@v3
+        with:
+          path: |
+            ${{ steps.npm-cache.outputs.dir }}
+          key: npm-20.x-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: webui
+        
+      - name: List dependencies
+        run: npm list --all
+        continue-on-error: true
+        working-directory: webui
+        
+      - name: Lint
+        run: npm run lint -- --max-warnings 0
+        working-directory: webui
+    
   build-webui:
     runs-on: ubuntu-latest
     steps:
