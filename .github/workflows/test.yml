@@ -107,7 +107,7 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build
+        run: npx ng build --aot
         
 #  test:
 #   runs-on: ubuntu-latest
