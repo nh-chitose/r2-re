@@ -55,7 +55,6 @@ class DepthTable {
   }
 
   private largerThanMinSize(quote: Quote) {
-    const maxTargetVolumePercent = _.defaultTo(this.config.maxTargetVolumePercent, 100);
     return quote.volume >= this.config.minSize * _.floor(100 / this.config.maxTargetVolumePercent);
   }
 

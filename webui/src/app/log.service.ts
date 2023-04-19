@@ -33,11 +33,11 @@ export class LogService {
     };
     this.socket = Subject.create(observer, observable);
     const sharedObservable = this.socket.pipe(share());
-    this.log$ = this.mapMessage<LogRecord>(sharedObservable, "log");
+    this.log$ = this.mapMessage(sharedObservable, "log");
     this.connected = true;
   }
 
-  private mapMessage<T>(sharedObservable: Observable<MessageEvent>, type: string) {
+  private mapMessage(sharedObservable: Observable<MessageEvent>, type: string) {
     return sharedObservable.pipe(
       map(x => JSON.parse(x.data) as WsMessage<string>),
       filter(x => x.type === type),

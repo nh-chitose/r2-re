@@ -8,6 +8,7 @@ export function getAverageFilledPrice(order: Order) {
     : _.sumBy(order.executions, x => x.size * x.price) / _.sumBy(order.executions, x => x.size);
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export function revive<T, K>(T: Function, o: K): T {
   const newObject = Object.create(T.prototype);
   return Object.assign(newObject, o) as T;

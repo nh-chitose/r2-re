@@ -14,8 +14,6 @@ export class DepthPriceCellComponent implements OnInit {
   @Input() isBest: boolean;
   formattedPrice: string;
 
-  constructor() {}
-
   ngOnInit() {
     if(Number.isNaN(this.priceCell.value)){
       this.formattedPrice = "⋮";

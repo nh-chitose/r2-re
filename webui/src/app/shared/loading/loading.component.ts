@@ -7,7 +7,5 @@ import { Component } from "@angular/core";
   templateUrl: "./loading.component.html",
 })
 export class LoadingComponent implements OnInit {
-  constructor() {}
-
   ngOnInit() {}
 }

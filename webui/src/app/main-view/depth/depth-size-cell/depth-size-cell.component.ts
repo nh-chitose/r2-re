@@ -16,8 +16,6 @@ export class DepthSizeCellComponent implements OnInit {
   @Input() side: string;
   sizeCellsWithContrast: { highPart: string, lowPart: string }[];
 
-  constructor() {}
-
   ngOnInit() {
     this.sizeCellsWithContrast = this.sizeCells.map(sizeCell => {
       const sizeString = sizeCell.value.toLocaleString("ja-JP", { minimumFractionDigits: 3, maximumFractionDigits: 3 });
