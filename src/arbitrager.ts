@@ -55,7 +55,6 @@ export default class Arbitrager {
       return;
     }
     this.positionService.print();
-
     this.logger.info(`${hr(20)}ARBITRAGER${hr(20)}`);
     await this.arbitrage(quotes);
     this.logger.info(hr(50));
