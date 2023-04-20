@@ -14,6 +14,7 @@ import PositionService from "./positionService";
 import QuoteAggregator from "./quoteAggregator";
 import ReportService from "./reportService";
 import symbols from "./symbols";
+import * as Util from "./util";
 import WebGateway from "./webGateway";
 
 process.title = "r2app";
@@ -21,8 +22,16 @@ process.title = "r2app";
 export default class AppRoot {
   private readonly logger = getLogger(this.constructor.name);
   private services: { start: () => Promise<void>, stop: () => Promise<void> }[];
+  private maintenanceTickCount = 0;
 
-  constructor(private readonly ioc: Container) {}
+  constructor(private readonly ioc: Container) {
+  // Set main tick
+    setTimeout(() => {
+      this.maintenanceTick();
+      setInterval(this.maintenanceTick.bind(this), 1 * 60 * 1000);
+    }, 10 * 1000);
+    this.logger.info("Interval jobs set up successfully");
+  }
 
   async start(): Promise<void> {
     try{
@@ -91,6 +100,31 @@ export default class AppRoot {
     } catch(ex){
       return undefined;
     }
+  }
+  /**
+  * ボットのデータ整理等のメンテナンスをするためのメインループ。約一分間隔で呼ばれます。
+  */
+  protected maintenanceTick(){
+    this.maintenanceTickCount++;
+    this.logger.debug(`[Tick] #${this.maintenanceTickCount}`);
+    // 4分ごとに主要情報を出力
+    if(this.maintenanceTickCount % 4 === 1) this.logGeneralInfo();
+  }
+  
+  /**
+  *  定期ログを実行します
+  */
+  logGeneralInfo(){
+    const memory = Util.getMemoryInfo();
+    this.logger.trace(
+      `[Tick] Free:${Math.floor(memory.free)}MB; Total:${Math.floor(memory.total)}MB; Usage:${memory.usage}%`
+    );
+    const nMem = process.memoryUsage();
+    const rss = Util.getMBytes(nMem.rss);
+    const ext = Util.getMBytes(nMem.external);
+    this.logger.trace(
+      `[Tick] Memory RSS: ${rss}MB, Heap total: ${Util.getMBytes(nMem.heapTotal)}MB, Total: ${Util.getPercentage(rss + ext, memory.total)}%`
+    );
   }
 }
 

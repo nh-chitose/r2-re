@@ -1,6 +1,7 @@
 import type { Execution, Order, Broker, QuoteSide, Quote } from "./types";
 
 import * as crypto from "crypto";
+import * as os from "os";
 import * as querystring from "querystring";
 
 import _ from "lodash";
@@ -82,4 +83,38 @@ export function formatQuote(quote: Quote) {
     `${padEnd(quote.broker, 10)} ${quote.side} `
     + `${padStart(quote.price.toLocaleString(), 7)} ${_.round(quote.volume, 3)}`
   );
+}
+export function getPercentage(part: number, total: number){
+  return Math.round(part / total * 100 * 100) / 100;
+}
+
+/**
+ * メモリ使用情報
+ */
+type MemoryUsageInfo = { free: number, total: number, used: number, usage: number };
+
+/**
+  * メモリ使用情報を取得します
+  * @returns メモリ使用情報
+  */
+export function getMemoryInfo(): MemoryUsageInfo{
+  const free = getMBytes(os.freemem());
+  const total = getMBytes(os.totalmem());
+  const used = total - free;
+  const usage = getPercentage(used, total);
+  return {
+    free,
+    total,
+    used,
+    usage,
+  };
+}
+
+/**
+  * 指定されたバイト数をメガバイトに変換します
+  * @param bytes 指定されたバイト
+  * @returns 返還後のメガバイト数
+  */
+export function getMBytes(bytes: number){
+  return Math.round(bytes / 1024/*KB*/ / 1024/*MB*/ * 100) / 100;
 }
