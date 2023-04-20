@@ -193,6 +193,7 @@ jobs:
     needs:
       - lint
       - build
+      - lint-webui
       - build-webui
 #       - test
     steps:

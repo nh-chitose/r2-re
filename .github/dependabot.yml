@@ -21,21 +21,7 @@ updates:
       - dependency-name: "node-fetch"
         update-types: ["version-update:semver-major"]
       - dependency-name: "open"
-        update-types: ["version-update:semver-major"]
-        
-  # actions
-  - package-ecosystem: github-actions
-    directory: "/"
-    schedule:
-      interval: "daily"
-      time: "09:00"
-      timezone: "Asia/Tokyo"
-    commit-message:
-      prefix: "Update(action):"
-    target-branch: "master"
-    labels:
-      - "dependencies"
-      - "github_actions"
+        update-types: ["version-update:semver-major"]"
 
   # webui
   - package-ecosystem: npm
@@ -52,3 +38,17 @@ updates:
       - "dependencies"
     allow:
       - dependency-type: "direct"
+
+  # actions
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    commit-message:
+      prefix: "Update(action):"
+    target-branch: "master"
+    labels:
+      - "dependencies"
+      - "github_actions"
