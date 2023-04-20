@@ -21,7 +21,7 @@ updates:
       - dependency-name: "node-fetch"
         update-types: ["version-update:semver-major"]
       - dependency-name: "open"
-        update-types: ["version-update:semver-major"]"
+        update-types: ["version-update:semver-major"]
 
   # webui
   - package-ecosystem: npm
@@ -38,7 +38,14 @@ updates:
       - "dependencies"
     allow:
       - dependency-type: "direct"
-
+    ignore:
+      - dependency-name: "@angular/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@angular/*"
+        update-types: ["version-update:semver-minor"]
+      - dependency-name: "@angular/*"
+        update-types: ["version-update:semver-patch"]
+        
   # actions
   - package-ecosystem: github-actions
     directory: "/"
