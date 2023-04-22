@@ -1,15 +1,8 @@
-// Ad-hoc script to close all leverage positions in Coincheck.
-
-import { options } from "@bitr/logger";
-
 import CoincheckApi from "../src/Coincheck/BrokerApi";
-import { getConfigRoot, findBrokerConfig } from "../src/config";
-
-options.enabled = false;
+import { findBrokerConfig } from "../src/config/configLoader";
 
 async function main() {
-  const config = getConfigRoot();
-  const ccConfig = findBrokerConfig(config, "Coincheck");
+  const ccConfig = findBrokerConfig("Coincheck");
   const ccApi = new CoincheckApi(ccConfig.key, ccConfig.secret);
   const positions = await ccApi.getAllOpenLeveragePositions();
   for(const position of positions){

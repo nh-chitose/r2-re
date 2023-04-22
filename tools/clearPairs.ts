@@ -1,4 +1,4 @@
-import { getActivePairStore } from "../src/ActivePairLevelStore";
+import { getActivePairStore } from "../src/activePairLevelStore";
 import { getChronoDB } from "../src/chrono";
 
 (async () => {

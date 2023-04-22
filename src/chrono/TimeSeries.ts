@@ -1,6 +1,5 @@
 import type { LevelUp, QueryOptions } from "./types";
 
-import _ from "lodash";
 import * as through2 from "through2";
 import { v1 as uuid } from "uuid";
 
@@ -102,6 +101,7 @@ export class TimeSeries<T> {
   }
 
   private dateToTimestamp(date: Date): string {
-    return _.padStart(String(date.valueOf()), 13, "0");
+    return date.valueOf().toString()
+      .padStart(13, "0");
   }
 }

@@ -1,7 +1,6 @@
 import type { Quote } from "./types";
 
 import { injectable, inject } from "inversify";
-import _ from "lodash";
 
 import { fatalErrors } from "./constants";
 import t from "./i18n";
@@ -74,7 +73,7 @@ export default class Arbitrager {
       this.status = "Order send/refresh failed";
       this.logger.error(ex.message);
       this.logger.debug(ex.stack);
-      if(_.some(fatalErrors, keyword => _.includes(ex.message, keyword))){
+      if(fatalErrors.some(keyword => keyword.includes(ex.message || keyword))){
         this.shouldStop = true;
       }
     }

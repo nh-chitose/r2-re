@@ -7,7 +7,6 @@ import type {
 import { EventEmitter } from "events";
 
 import { injectable, inject } from "inversify";
-import _ from "lodash";
 
 import BrokerAdapterRouter from "./brokerAdapterRouter";
 import { findBrokerConfig } from "./config/configLoader";
@@ -22,7 +21,7 @@ import {
   ConfigStore,
   ActivePairStore
 } from "./types";
-import { delay, formatQuote } from "./util";
+import { delay, formatQuote, round, sumBy } from "./util";
 
 @injectable()
 export default class PairTrader extends EventEmitter {
@@ -51,7 +50,7 @@ export default class PairTrader extends EventEmitter {
 
   private async checkOrderState(orders: OrderImpl[], closable: boolean): Promise<void> {
     const { config } = this.configStore;
-    for(const i of _.range(1, config.maxRetryCount + 1)){
+    for(let i = 1; i <= config.maxRetryCount; i++){
       await delay(config.orderStatusCheckInterval);
       this.logger.info(t`OrderCheckAttempt`, i);
       this.logger.info(t`CheckingIfBothLegsAreDoneOrNot`);
@@ -87,11 +86,11 @@ export default class PairTrader extends EventEmitter {
         await Promise.all(cancelTasks);
         if(
           orders.some(o => !o.filled)
-          && _(orders).sumBy(o => o.filledSize * (o.side === "Buy" ? -1 : 1)) !== 0
+          && sumBy(orders, o => o.filledSize * (o.side === "Buy" ? -1 : 1)) !== 0
         ){
           const subOrders = await this.singleLegHandler.handle(orders as OrderPair, closable);
           if(subOrders.length !== 0 && subOrders.every(o => o.filled)){
-            this.printProfit(_.concat(orders, subOrders));
+            this.printProfit(orders.concat(subOrders));
           }
         }
         break;
@@ -107,9 +106,9 @@ export default class PairTrader extends EventEmitter {
     const orderSide = quote.side === "Ask" ? "Buy" : "Sell";
     const orderPrice
      = quote.side === "Ask" && config.acceptablePriceRange !== undefined
-       ? _.round(quote.price * (1 + config.acceptablePriceRange / 100))
+       ? round(quote.price * (1 + config.acceptablePriceRange / 100))
        : quote.side === "Bid" && config.acceptablePriceRange !== undefined
-         ? _.round(quote.price * (1 - config.acceptablePriceRange / 100))
+         ? round(quote.price * (1 - config.acceptablePriceRange / 100))
          : quote.price;
     const order = new OrderImpl({
       symbol: this.configStore.config.symbol,
@@ -137,9 +136,9 @@ export default class PairTrader extends EventEmitter {
 
   private printProfit(orders: OrderImpl[]): void {
     const { profit, commission } = calcProfit(orders);
-    this.logger.info(t`ProfitIs`, _.round(profit));
+    this.logger.info(t`ProfitIs`, round(profit));
     if(commission !== 0){
-      this.logger.info(t`CommissionIs`, _.round(commission));
+      this.logger.info(t`CommissionIs`, round(commission));
     }
   }
 } /* istanbul ignore next */

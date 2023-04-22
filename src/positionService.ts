@@ -5,7 +5,6 @@ import { EventEmitter } from "events";
 
 import Decimal from "decimal.js";
 import { injectable, inject } from "inversify";
-import _ from "lodash";
 
 import BrokerAdapterRouter from "./brokerAdapterRouter";
 import BrokerStabilityTracker from "./brokerStabilityTracker";
@@ -13,7 +12,7 @@ import t from "./i18n";
 import { getLogger } from "./logger";
 import symbols from "./symbols";
 import { ConfigStore } from "./types";
-import { hr, eRound, splitSymbol, padEnd, padStart } from "./util";
+import { hr, eRound, splitSymbol, padEnd, padStart, round, sumBy, max } from "./util";
 
 
 @injectable()
@@ -50,13 +49,13 @@ export default class PositionService extends EventEmitter {
     const { baseCcy } = splitSymbol(this.configStore.config.symbol);
     const isOk = (b: any) => b ? "OK" : "NG";
     const formatBrokerPosition = (brokerPosition: BrokerPosition) =>
-      `${padEnd(brokerPosition.broker, 10)}: ${padStart(_.round(brokerPosition.baseCcyPosition, 3), 6)} ${baseCcy}, `
+      `${padEnd(brokerPosition.broker, 10)}: ${padStart(round(brokerPosition.baseCcyPosition, 3), 6)} ${baseCcy}, `
       + `${t`LongAllowed`}: ${isOk(brokerPosition.longAllowed)}, `
       + `${t`ShortAllowed`}: ${isOk(brokerPosition.shortAllowed)}`;
 
     this.logger.info(`${hr(21)}POSITION${hr(21)}`);
-    this.logger.info(`Net Exposure: ${_.round(this.netExposure, 3)} ${baseCcy}`);
-    _.each(this.positionMap, (position: BrokerPosition) => {
+    this.logger.info(`Net Exposure: ${round(this.netExposure, 3)} ${baseCcy}`);
+    Object.values(this.positionMap).forEach((position) => {
       const stability = this.brokerStabilityTracker.stability(position.broker);
       this.logger.info(`${formatBrokerPosition(position)} (Stability: ${stability})`);
     });
@@ -65,7 +64,7 @@ export default class PositionService extends EventEmitter {
   }
 
   get netExposure() {
-    return eRound(_.sumBy(_.values(this.positionMap), (p: BrokerPosition) => p.baseCcyPosition));
+    return eRound(sumBy(Object.values(this.positionMap), (p: BrokerPosition) => p.baseCcyPosition));
   }
 
   get positionMap() {
@@ -84,10 +83,10 @@ export default class PositionService extends EventEmitter {
       const brokerConfigs = config.brokers.filter(b => b.enabled);
       const promises = brokerConfigs.map(brokerConfig => this.getBrokerPosition(brokerConfig, config.minSize));
       const brokerPositions = await Promise.all(promises);
-      this._positionMap = _(brokerPositions)
-        .map((p: BrokerPosition) => [p.broker, p])
-        .fromPairs()
-        .value();
+      this._positionMap = Object.fromEntries(
+        brokerPositions
+          .map((p: BrokerPosition) => [p.broker, p])
+      );
       this.emit("positionUpdated", this.positionMap);
     } catch(ex){
       this.logger.error(ex.message);
@@ -105,12 +104,12 @@ export default class PositionService extends EventEmitter {
     if(baseCcyPosition === undefined){
       throw new Error(`Unable to find base ccy position in ${brokerConfig.broker}. ${JSON.stringify([...positions])}`);
     }
-    const allowedLongSize = _.max([
+    const allowedLongSize = max([
       0,
       new Decimal(brokerConfig.maxLongPosition).minus(baseCcyPosition)
         .toNumber(),
     ]);
-    const allowedShortSize = _.max([
+    const allowedShortSize = max([
       0,
       new Decimal(brokerConfig.maxShortPosition).plus(baseCcyPosition)
         .toNumber(),

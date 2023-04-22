@@ -1,14 +1,15 @@
 import type {
   LeveragePositionsRequest,
-  LeveragePosition,
   NewOrderRequest,
   Pagination,
   Transaction } from "./types";
 
 import { setTimeout } from "timers";
 
-import _ from "lodash";
-
+import {
+  LeveragePosition,
+  CloseOrder,
+  NewOrder } from "./types";
 import {
   AccountsBalanceResponse,
   LeveragePositionsResponse,
@@ -54,17 +55,26 @@ export default class BrokerApi {
 
   async getAllOpenLeveragePositions(limit: number = 20): Promise<LeveragePosition[]> {
     if(this.leveragePositionsCache){
-      return _.cloneDeep(this.leveragePositionsCache);
+      return this.leveragePositionsCache.map(d => Object.assign(new LeveragePosition({}), d, {
+        close_orders: d.close_orders.map(order => Object.assign(new CloseOrder({}), order, {
+          created_at: new Date(order.created_at.toString()),
+        })),
+        created_at: new Date(d.created_at.toString()),
+        new_order: Object.assign(new NewOrder({}), {
+          ...d.new_order,
+          created_at: new Date(d.created_at.toString()),
+        }),
+      }));
     }
     let result: LeveragePosition[] = [];
     const request: LeveragePositionsRequest = { limit, status: "open", order: "desc" };
     let reply = await this.getLeveragePositions(request);
     while(reply.data !== undefined && reply.data.length > 0){
-      result = _.concat(result, reply.data);
+      result = [...result, ...reply.data];
       if(reply.data.length < limit){
         break;
       }
-      const last = _.last(reply.data);
+      const last = reply.data[reply.data.length - 1];
       reply = await this.getLeveragePositions({ ...request, starting_after: last.id });
     }
     this.leveragePositionsCache = result;
@@ -97,8 +107,8 @@ export default class BrokerApi {
     const pagination = { order: "desc", limit: 20 } as Partial<Pagination>;
     let res: TransactionsResponse = await this.getTransactions(pagination);
     while(res.data.length > 0){
-      const last = _.last(res.data);
-      transactions = _.concat(transactions, res.data.filter(x => from < x.created_at));
+      const last = res.data[res.data.length - 1];
+      transactions = transactions.concat(res.data.filter(x => from < x.created_at));
       if(from > last.created_at || res.pagination.limit > res.data.length){
         break;
       }

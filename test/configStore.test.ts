@@ -3,7 +3,6 @@ import type { FormedConfigRootType } from "../src/config";
 import type { Socket } from "zeromq";
 
 import { expect } from "chai";
-import _ from "lodash";
 import { socket } from "zeromq";
 
 import { JsonConfigStore } from "../src/config";
@@ -48,9 +47,9 @@ describe("JsonConfigStore", () => {
       // @ts-expect-error
       store.TTL = 5;
       expect(store.config.minSize).to.equal(0.01);
-      await store.set(_.merge({}, store.config, { minSize: 0.001 }));
+      await store.set(Object.assign({}, store.config, { minSize: 0.001 }));
       expect(store.config.minSize).to.equal(0.001);
-      await store.set(_.merge({}, store.config, { minSize: 0.01 }));
+      await store.set(Object.assign({}, store.config, { minSize: 0.01 }));
       expect(store.config.minSize).to.equal(0.01);
     } catch(ex){
       console.log(ex);

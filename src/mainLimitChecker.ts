@@ -7,11 +7,10 @@ import type {
   OrderPair
 } from "./types";
 
-import _ from "lodash";
-
 import t from "./i18n";
 import { getLogger } from "./logger";
 import { calcProfit } from "./pnl";
+import { round, max, mean, min } from "./util";
 
 export default class MainLimitChecker implements LimitChecker {
   private readonly logger = getLogger(this.constructor.name);
@@ -84,13 +83,13 @@ class MinExitTargetProfitLimit implements LimitChecker {
   private getEffectiveMinExitTargetProfit() {
     const pair = this.orderPair;
     const { bid, ask, targetVolume } = this.spreadAnalysisResult;
-    const targetVolumeNotional = _.mean([ask.price, bid.price]) * targetVolume;
+    const targetVolumeNotional = mean([ask.price, bid.price]) * targetVolume;
     const { minExitTargetProfit, minExitTargetProfitPercent, exitNetProfitRatio } = this.configStore.config;
     const openProfit = calcProfit(pair).profit;
-    return _.max([
+    return max([
       minExitTargetProfit,
       minExitTargetProfitPercent !== undefined
-        ? _.round(minExitTargetProfitPercent / 100 * targetVolumeNotional)
+        ? round(minExitTargetProfitPercent / 100 * targetVolumeNotional)
         : Number.MIN_SAFE_INTEGER,
       exitNetProfitRatio !== undefined ? openProfit * (exitNetProfitRatio / 100 - 1) : Number.MIN_SAFE_INTEGER,
     ]);
@@ -141,11 +140,11 @@ class MinTargetProfitLimit implements LimitChecker {
   private isTargetProfitLargeEnough(): boolean {
     const config = this.configStore.config;
     const { bid, ask, targetVolume, targetProfit } = this.spreadAnalysisResult;
-    const targetVolumeNotional = _.mean([ask.price, bid.price]) * targetVolume;
-    const effectiveMinTargetProfit = _.max([
+    const targetVolumeNotional = mean([ask.price, bid.price]) * targetVolume;
+    const effectiveMinTargetProfit = max([
       config.minTargetProfit,
       config.minTargetProfitPercent !== undefined
-        ? _.round(config.minTargetProfitPercent / 100 * targetVolumeNotional)
+        ? round(config.minTargetProfitPercent / 100 * targetVolumeNotional)
         : 0,
     ]);
     return targetProfit >= effectiveMinTargetProfit;
@@ -168,10 +167,10 @@ class MaxTargetProfitLimit implements LimitChecker {
   private isProfitSmallerThanLimit(): boolean {
     const { config } = this.configStore;
     const { bid, ask, targetVolume, targetProfit } = this.spreadAnalysisResult;
-    const maxTargetProfit = _.min([
+    const maxTargetProfit = min([
       config.maxTargetProfit,
       config.maxTargetProfitPercent !== undefined
-        ? _.round(config.maxTargetProfitPercent / 100 * _.mean([ask.price, bid.price]) * targetVolume)
+        ? round(config.maxTargetProfitPercent / 100 * mean([ask.price, bid.price]) * targetVolume)
         : Number.MAX_SAFE_INTEGER,
     ]);
     return targetProfit <= maxTargetProfit;
@@ -194,7 +193,7 @@ class MaxTargetVolumeLimit implements LimitChecker {
   private isVolumeSmallerThanLimit(): boolean {
     const { config } = this.configStore;
     const { availableVolume, targetVolume } = this.spreadAnalysisResult;
-    const maxTargetVolume = _.min([
+    const maxTargetVolume = min([
       config.maxTargetVolumePercent !== undefined
         ? config.maxTargetVolumePercent / 100 * availableVolume
         : Number.MAX_SAFE_INTEGER,

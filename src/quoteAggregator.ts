@@ -3,13 +3,13 @@ import type { Broker, Quote } from "./types";
 
 import { AwaitableEventEmitter } from "@bitr/awaitable-event-emitter";
 import { injectable, inject } from "inversify";
-import _ from "lodash";
 import { DateTime, Interval } from "luxon";
 
 import BrokerAdapterRouter from "./brokerAdapterRouter";
 import { getLogger } from "./logger";
 import symbols from "./symbols";
 import { ConfigStore } from "./types";
+import { groupBy, sumBy } from "./util";
 
 @injectable()
 export default class QuoteAggregator extends AwaitableEventEmitter {
@@ -53,7 +53,7 @@ export default class QuoteAggregator extends AwaitableEventEmitter {
       const enabledBrokers = this.getEnabledBrokers();
       const fetchTasks = enabledBrokers.map(x => this.brokerAdapterRouter.fetchQuotes(x));
       const quotesMap = await Promise.all(fetchTasks);
-      const allQuotes = _.flatten(quotesMap);
+      const allQuotes = quotesMap.flatMap(d => d);
       await this.setQuotes(this.fold(allQuotes, this.configStore.config.priceMergeSize));
       this.logger.debug("Aggregated.");
     } catch(ex){
@@ -73,15 +73,14 @@ export default class QuoteAggregator extends AwaitableEventEmitter {
   }
 
   private getEnabledBrokers(): Broker[] {
-    return _(this.configStore.config.brokers)
+    return this.configStore.config.brokers
       .filter(b => b.enabled)
       .filter(b => this.timeFilter(b))
-      .map(b => b.broker)
-      .value();
+      .map(b => b.broker);
   }
 
   private timeFilter(brokerConfig: BrokerConfigType): boolean {
-    if(_.isEmpty(brokerConfig.noTradePeriods)){
+    if(brokerConfig.noTradePeriods.length === 0){
       return true;
     }
     const current = DateTime.local();
@@ -97,17 +96,18 @@ export default class QuoteAggregator extends AwaitableEventEmitter {
   }
 
   private fold(quotes: Quote[], step: number): Quote[] {
-    return _(quotes)
-      .groupBy((q: Quote) => {
-        const price = q.side === "Ask" ? _.ceil(q.price / step) * step : _.floor(q.price / step) * step;
-        return _.join([price, q.broker, q.side], "#");
-      })
-      .map((value: Quote[], key) => ({
+    const grouped = groupBy(quotes, q => {
+      const price = q.side === "Ask" ? Math.ceil(q.price / step) * step : Math.floor(q.price / step) * step;
+      return [price, q.broker, q.side].join("#");
+    });
+    return Object.keys(grouped).map(key => {
+      const value = grouped[key];
+      return {
         broker: value[0].broker,
         side: value[0].side,
         price: Number(key.substring(0, key.indexOf("#"))),
-        volume: _.sumBy(value, q => q.volume),
-      }))
-      .value();
+        volume: sumBy(value, q => q.volume),
+      };
+    });
   }
 } /* istanbul ignore next */

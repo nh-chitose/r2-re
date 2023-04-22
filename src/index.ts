@@ -78,7 +78,7 @@ export default class AppRoot {
         this.logger.trace(`${brokerName} is not enabled.`);
         return;
       }
-      const brokerModule = await this.tryImport(`./${brokerName}`);
+      const brokerModule = await this.tryImport(`./brokers/${brokerName}`);
       if(brokerModule === undefined){
         this.logger.fatal(`Unable to find ${brokerName} package. Stopped app.`);
         exec(`pkill ${process.title}`);

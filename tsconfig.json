@@ -22,7 +22,6 @@
     "pretty": true,
     "skipLibCheck": true,
     "types": ["reflect-metadata", "mocha", "chai", "chai-spies"],
-    "lib": ["ES2022"]
    },
   "include": [
     "./src/**/*.ts"

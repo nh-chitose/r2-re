@@ -1,14 +1,8 @@
-// Ad-hoc script to close all trades in quoine.
-import { options } from "@bitr/logger";
-
 import QuoineApi from "../src/Quoine/BrokerApi";
-import { findBrokerConfig, getConfigRoot } from "../src/configUtil";
-
-options.enabled = false;
+import { findBrokerConfig } from "../src/config/configLoader";
 
 async function main() {
-  const config = getConfigRoot();
-  const quConfig = findBrokerConfig(config, "Quoine");
+  const quConfig = findBrokerConfig("Quoine");
   const quApi = new QuoineApi(quConfig.key, quConfig.secret);
 
   // quoine margin balance

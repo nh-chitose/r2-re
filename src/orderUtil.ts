@@ -2,10 +2,8 @@ import type OrderImpl from "./orderImpl";
 
 import { format } from "util";
 
-import _ from "lodash";
-
 import t from "./i18n";
-import { splitSymbol } from "./util";
+import { splitSymbol, round } from "./util";
 
 
 export function toExecSummary(order: OrderImpl): string {
@@ -17,7 +15,7 @@ export function toExecSummary(order: OrderImpl): string {
       order.side,
       order.filledSize,
       baseCcy,
-      _.round(order.averageFilledPrice).toLocaleString()
+      round(order.averageFilledPrice).toLocaleString()
     )
     : format(
       t`UnfilledSummary`,

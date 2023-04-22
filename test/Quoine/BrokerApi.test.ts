@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import _ from "lodash";
 import * as nock from "nock";
 
 import nocksetup from "./nocksetup";

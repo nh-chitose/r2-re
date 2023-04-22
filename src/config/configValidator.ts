@@ -2,7 +2,6 @@ import "reflect-metadata";
 import type { BrokerConfigType, FormedConfigRootType } from ".";
 
 import { injectable } from "inversify";
-import _ from "lodash";
 
 import { findBrokerConfig } from "./configLoader";
 import t from "../i18n";
@@ -33,7 +32,7 @@ export class ConfigValidator {
     if(this.isEnabled(coincheck)){
       const allowedCashMarginType = ["Cash", "MarginOpen", "NetOut"];
       this.throwIf(
-        !_.includes(allowedCashMarginType, coincheck.cashMarginType),
+        !allowedCashMarginType.includes(coincheck.cashMarginType),
         "CashMarginType must be Cash, NetOut or MarginOpen for Coincheck."
       );
       this.validateBrokerConfigCommon(coincheck);
@@ -43,7 +42,7 @@ export class ConfigValidator {
     if(this.isEnabled(quoine)){
       const allowedCashMarginType = ["Cash", "NetOut"];
       this.throwIf(
-        !_.includes(allowedCashMarginType, quoine.cashMarginType),
+        !allowedCashMarginType.includes(quoine.cashMarginType),
         "CashMarginType must be Cash or NetOut for Quoine."
       );
       this.validateBrokerConfigCommon(quoine);

@@ -1,6 +1,5 @@
 import "reflect-metadata";
 import { expect } from "chai";
-import _ from "lodash";
 
 import BrokerStabilityTracker from "../src/brokerStabilityTracker";
 import PositionService from "../src/positionService";
@@ -36,11 +35,11 @@ describe("Position Service", () => {
   it("positions", async () => {
     const ps = new PositionService(JsonConfigStore as any, baRouter as any, bst as any);
     await ps.start();
-    const positions = _.values(ps.positionMap);
+    const positions = Object.values(ps.positionMap);
     const exposure = ps.netExposure;
     ps.print();
     await ps.stop();
-    const ccPos = _.find(positions, x => x.broker === "Coincheck");
+    const ccPos = positions.find(x => x.broker === "Coincheck");
     expect(positions.length).to.equal(2);
     expect(exposure).to.equal(-0.1);
     expect(ccPos?.baseCcyPosition).to.equal(-0.3);
@@ -48,7 +47,7 @@ describe("Position Service", () => {
     expect(ccPos?.shortAllowed).to.equal(false);
     expect(ccPos?.allowedLongSize).to.equal(1.3);
     expect(ccPos?.allowedShortSize).to.equal(0);
-    const qPos = _.find(positions, x => x.broker === "Quoine");
+    const qPos = positions.find(x => x.broker === "Quoine");
     expect(qPos?.baseCcyPosition).to.equal(0.2);
     expect(qPos?.longAllowed).to.equal(true);
     expect(qPos?.shortAllowed).to.equal(true);
@@ -75,11 +74,11 @@ describe("Position Service", () => {
     };
     const ps = new PositionService(JsonConfigStore as any, localBaRouter as any, bst as any);
     await ps.start();
-    const positions = _.values(ps.positionMap);
+    const positions = Object.values(ps.positionMap);
     const exposure = ps.netExposure;
     ps.print();
     await ps.stop();
-    const ccPos = _.find(positions, x => x.broker === "Coincheck");
+    const ccPos = positions.find(x => x.broker === "Coincheck");
     expect(positions.length).to.equal(2);
     expect(exposure).to.equal(-0.299998);
     expect(ccPos?.baseCcyPosition).to.equal(-0.3);
@@ -87,7 +86,7 @@ describe("Position Service", () => {
     expect(ccPos?.shortAllowed).to.equal(false);
     expect(ccPos?.allowedLongSize).to.equal(1.3);
     expect(ccPos?.allowedShortSize).to.equal(0);
-    const qPos = _.find(positions, x => x.broker === "Quoine");
+    const qPos = positions.find(x => x.broker === "Quoine");
     expect(qPos?.baseCcyPosition).to.equal(0.000002);
     expect(qPos?.longAllowed).to.equal(true);
     expect(qPos?.shortAllowed).to.equal(false);
@@ -110,7 +109,7 @@ describe("Position Service", () => {
     await ps.start();
     await delay(10);
     await ps.stop();
-    const positions = _.values(ps.positionMap);
+    const positions = Object.values(ps.positionMap);
     expect(positions.length).to.equal(2);
   });
 
@@ -147,7 +146,7 @@ describe("Position Service", () => {
     const localBst = new BrokerStabilityTracker(localJsonConfigStore as any);
     const ps = new PositionService(localJsonConfigStore as any, localBaRouter as any, localBst as any);
     await ps.start();
-    const positions = _.values(ps.positionMap);
+    const positions = Object.values(ps.positionMap);
     expect(positions.length).to.equal(0);
     await ps.stop();
   });

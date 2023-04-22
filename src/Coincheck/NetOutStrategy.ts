@@ -2,9 +2,7 @@ import type BrokerApi from "./BrokerApi";
 import type { CashMarginTypeStrategy, NewOrderRequest } from "./types";
 import type { Order } from "../types";
 
-import _ from "lodash";
-
-import { eRound, almostEqual } from "../util";
+import { eRound, almostEqual, sumBy } from "../util";
 
 
 export default class NetOutStrategy implements CashMarginTypeStrategy {
@@ -27,18 +25,17 @@ export default class NetOutStrategy implements CashMarginTypeStrategy {
 
   async getBtcPosition(): Promise<number> {
     const positions = await this.brokerApi.getAllOpenLeveragePositions();
-    const longPosition = _.sumBy(positions.filter(p => p.side === "buy"), p => p.amount);
-    const shortPosition = _.sumBy(positions.filter(p => p.side === "sell"), p => p.amount);
+    const longPosition = sumBy(positions.filter(p => p.side === "buy"), p => p.amount);
+    const shortPosition = sumBy(positions.filter(p => p.side === "sell"), p => p.amount);
     return eRound(longPosition - shortPosition);
   }
 
   private async getNetOutRequest(order: Order): Promise<NewOrderRequest> {
     const openPositions = await this.brokerApi.getAllOpenLeveragePositions();
     const targetSide = order.side === "Buy" ? "sell" : "buy";
-    const candidates = _(openPositions)
+    const candidates = openPositions
       .filter(p => p.side === targetSide)
-      .filter(p => almostEqual(p.amount, order.size, 1))
-      .value();
+      .filter(p => almostEqual(p.amount, order.size, 1));
     if(order.symbol !== "BTC/JPY"){
       throw new Error("Not supported");
     }
@@ -52,7 +49,7 @@ export default class NetOutStrategy implements CashMarginTypeStrategy {
         amount: order.size,
       };
     }
-    const targetPosition = _.last(candidates);
+    const targetPosition = candidates[candidates.length - 1];
     return {
       ...request,
       order_type: order.side === "Buy" ? "close_short" : "close_long",

@@ -2,7 +2,6 @@ import "reflect-metadata";
 import type { ConfigStore } from "../src/types";
 
 import { expect } from "chai";
-import _ from "lodash";
 
 import SpreadAnalyzer from "../src/spreadAnalyzer";
 import { toQuote } from "../src/util";

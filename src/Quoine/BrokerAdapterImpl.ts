@@ -9,7 +9,6 @@ import type {
 import type { CashMarginType } from "../types";
 
 import Decimal from "decimal.js";
-import _ from "lodash";
 import "dotenv/config";
 
 import BrokerApi from "./BrokerApi";
@@ -132,7 +131,7 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
     }else if(order.filledSize > 0){
       order.status = "PartiallyFilled";
     }
-    order.executions = _.map(ordersResponse.executions, x => {
+    order.executions = ordersResponse.executions.map(x => {
       const e = toExecution(order);
       e.price = Number(x.price);
       e.size = Number(x.quantity);
@@ -143,14 +142,12 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
   }
 
   private mapToQuote(priceLevelsResponse: PriceLevelsResponse): Quote[] {
-    const asks = _(priceLevelsResponse.sell_price_levels)
-      .take(100)
-      .map(q => toQuote(this.broker, "Ask", Number(q[0]), Number(q[1])))
-      .value();
-    const bids = _(priceLevelsResponse.buy_price_levels)
-      .take(100)
-      .map(q => toQuote(this.broker, "Bid", Number(q[0]), Number(q[1])))
-      .value();
-    return _.concat(asks, bids);
+    const asks = priceLevelsResponse.sell_price_levels
+      .slice(0, 100)
+      .map(q => toQuote(this.broker, "Ask", Number(q[0]), Number(q[1])));
+    const bids = priceLevelsResponse.buy_price_levels
+      .slice(0, 100)
+      .map(q => toQuote(this.broker, "Bid", Number(q[0]), Number(q[1])));
+    return [...asks, ...bids];
   }
 } /* istanbul ignore next */

@@ -9,10 +9,10 @@ import type {
 } from "./types";
 import type * as http from "http";
 
+import { Value } from "@sinclair/typebox/value";
 import { autobind } from "core-decorators";
 import express from "express";
 import { injectable, inject } from "inversify";
-import _ from "lodash";
 import WebSocket from "ws";
 
 import { wssPort } from "./constants";
@@ -66,7 +66,7 @@ export default class WebGateway {
       return;
     }
 
-    const host = _.defaultTo(webGateway.host, "localhost");
+    const host = webGateway.host ?? "localhost";
     this.logger.debug(`Starting ${this.constructor.name}...`);
     for(const e of this.eventMapper){
       e[0].on(e[1], e[2]);
@@ -144,7 +144,7 @@ export default class WebGateway {
   }
 
   private sanitize(config: FormedConfigRootType): FormedConfigRootType {
-    const copy = _.cloneDeep(config);
+    const copy = Value.Clone(config);
     delete copy.logging;
     return copy;
   }
@@ -155,7 +155,8 @@ export default class WebGateway {
         client.send(JSON.stringify({ type, body }), err => {
           if(err){
             this.logger.debug(err.message);
-            _.pull(this.clients, client);
+            const index = this.clients.findIndex(c => c === client);
+            this.clients.splice(index, 1);
           }
         });
       }

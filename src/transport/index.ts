@@ -1,7 +1,6 @@
 import type { Server as httpServer } from "http";
 
 import express from "express";
-import _ from "lodash";
 import { mkdirp } from "mkdirp";
 import WebSocket from "ws";
 
@@ -37,26 +36,22 @@ try{
 
 // notification integrations
 if(configRoot){
-  const slackConfig = _.get(configRoot, "logging.slack");
-  const lineConfig = _.get(configRoot, "logging.line");
+  const slackConfig = "slack" in configRoot.logging && configRoot.logging.slack || undefined;
+  const lineConfig = configRoot.logging.line || undefined;
   addIntegration(SlackIntegration, slackConfig);
   addIntegration(LineIntegration, lineConfig);
 }
 
 // websocket integration
-const webGatewayConfig = _.get(configRoot, "webGateway");
+const webGatewayConfig = configRoot.webGateway;
 if(webGatewayConfig && webGatewayConfig.enabled){
   const clients: WebSocket[] = [];
   const wsTransform = process.stdin.pipe(splitToJson());
   app = express();
-  server = app.listen(wssLogPort, webGatewayConfig.host, () => {
-    _.noop();
-  });
+  server = app.listen(wssLogPort, webGatewayConfig.host, () => {});
   wss = new WebSocket.Server({ server });
   wss.on("connection", ws => {
-    ws.on("error", () => {
-      _.noop();
-    });
+    ws.on("error", () => {});
     clients.push(ws);
   });
   wsTransform.on("data", line => {
@@ -65,9 +60,7 @@ if(webGatewayConfig && webGatewayConfig.enabled){
     }
     try{
       broadcast(clients, "log", line);
-    } catch(err){
-      _.noop();
-    }
+    } catch(err){/* empty */}
   });
 }
 
@@ -76,7 +69,8 @@ function broadcast(clients: WebSocket[], type: string, body: any) {
     if(client.readyState === WebSocket.OPEN){
       client.send(JSON.stringify({ type, body }), err => {
         if(err){
-          _.pull(clients, client);
+          const index = clients.findIndex(c => c === client);
+          clients.splice(index, 1);
         }
       });
     }

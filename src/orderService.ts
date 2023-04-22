@@ -3,7 +3,6 @@ import type { OrderInit } from "./orderImpl";
 import { EventEmitter } from "events";
 
 import { injectable, inject } from "inversify";
-import _ from "lodash";
 
 import OrderImpl from "./orderImpl";
 import symbols from "./symbols";
@@ -31,7 +30,8 @@ export default class OrderService extends EventEmitter {
 
   async finalizeOrder(order: OrderImpl): Promise<void> {
     await this.historicalOrderStore.put(order);
-    _.pull(this.orders, order);
+    const index = this.orders.findIndex(o => o === order);
+    this.orders.splice(index, 1);
     this.emit("orderFinalized", order);
   }
 } /* istanbul ignore next */

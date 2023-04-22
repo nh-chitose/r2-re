@@ -3,7 +3,8 @@
     "extends": [
       "eslint:recommended",
       "plugin:@typescript-eslint/recommended",
-      "plugin:eslint-comments/recommended"
+      "plugin:eslint-comments/recommended",
+      "plugin:you-dont-need-lodash-underscore/all-warn"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
@@ -13,7 +14,8 @@
       "@typescript-eslint",
       "import",
       "node",
-      "named-import-spacing"
+      "named-import-spacing",
+      "you-dont-need-lodash-underscore"
     ],
     "env": {
       "node": true

@@ -2,9 +2,7 @@ import type BrokerApi from "./BrokerApi";
 import type { CashMarginTypeStrategy } from "./types";
 import type { Order } from "../types";
 
-import _ from "lodash";
-
-import { eRound } from "../util";
+import { eRound, sumBy } from "../util";
 
 
 export default class MarginOpenStrategy implements CashMarginTypeStrategy {
@@ -32,8 +30,8 @@ export default class MarginOpenStrategy implements CashMarginTypeStrategy {
 
   async getBtcPosition(): Promise<number> {
     const positions = await this.brokerApi.getAllOpenLeveragePositions();
-    const longPosition = _.sumBy(positions.filter(p => p.side === "buy"), p => p.amount);
-    const shortPosition = _.sumBy(positions.filter(p => p.side === "sell"), p => p.amount);
+    const longPosition = sumBy(positions.filter(p => p.side === "buy"), p => p.amount);
+    const shortPosition = sumBy(positions.filter(p => p.side === "sell"), p => p.amount);
     return eRound(longPosition - shortPosition);
   }
 

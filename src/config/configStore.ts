@@ -9,7 +9,6 @@ import { setTimeout } from "timers";
 import { promisify } from "util";
 
 import { injectable } from "inversify";
-import _ from "lodash";
 
 import { getConfig } from "./configLoader";
 import { ConfigValidator } from "./configValidator";
@@ -64,7 +63,7 @@ export class JsonConfigStore extends EventEmitter implements ConfigStore {
       case "set":
         try{
           const newConfig = request.data;
-          await this.set(_.merge({}, getConfig(), newConfig));
+          await this.set(Object.assign({}, getConfig(), newConfig));
           respond({ success: true });
           this.logger.debug(`Config updated with ${JSON.stringify(newConfig)}`);
         } catch(ex){

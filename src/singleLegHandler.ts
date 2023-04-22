@@ -1,7 +1,6 @@
 import type { OrderPair } from "./types";
 
 import { injectable, inject } from "inversify";
-import _ from "lodash";
 
 import BrokerAdapterRouter from "./brokerAdapterRouter";
 import { LOT_MIN_DECIMAL_PLACE } from "./constants";
@@ -11,7 +10,7 @@ import OrderImpl from "./orderImpl";
 import * as OrderUtil from "./orderUtil";
 import symbols from "./symbols";
 import { ConfigStore } from "./types";
-import { delay, splitSymbol } from "./util";
+import { delay, floor, round, splitSymbol } from "./util";
 
 @injectable()
 export default class SingleLegHandler {
@@ -50,8 +49,8 @@ export default class SingleLegHandler {
     const smallLeg = orders[0].filledSize <= orders[1].filledSize ? orders[0] : orders[1];
     const largeLeg = orders[0].filledSize <= orders[1].filledSize ? orders[1] : orders[0];
     const sign = largeLeg.side === "Buy" ? -1 : 1;
-    const price = _.round(largeLeg.price * (1 + sign * options.limitMovePercent / 100));
-    const size = _.floor(largeLeg.filledSize - smallLeg.filledSize, LOT_MIN_DECIMAL_PLACE);
+    const price = Math.round(largeLeg.price * (1 + sign * options.limitMovePercent / 100));
+    const size = floor(largeLeg.filledSize - smallLeg.filledSize, LOT_MIN_DECIMAL_PLACE);
     const { baseCcy } = splitSymbol(this.symbol);
     this.logger.info(t`ReverseFilledLeg`, OrderUtil.toShortString(largeLeg), price.toLocaleString(), size, baseCcy);
     const reversalOrder = new OrderImpl({
@@ -72,8 +71,8 @@ export default class SingleLegHandler {
     const smallLeg = orders[0].filledSize <= orders[1].filledSize ? orders[0] : orders[1];
     const largeLeg = orders[0].filledSize <= orders[1].filledSize ? orders[1] : orders[0];
     const sign = smallLeg.side === "Buy" ? 1 : -1;
-    const price = _.round(smallLeg.price * (1 + sign * options.limitMovePercent / 100));
-    const size = _.floor(smallLeg.pendingSize - largeLeg.pendingSize, LOT_MIN_DECIMAL_PLACE);
+    const price = round(smallLeg.price * (1 + sign * options.limitMovePercent / 100));
+    const size = floor(smallLeg.pendingSize - largeLeg.pendingSize, LOT_MIN_DECIMAL_PLACE);
     const { baseCcy } = splitSymbol(this.symbol);
     this.logger.info(t`ExecuteUnfilledLeg`, OrderUtil.toShortString(smallLeg), price.toLocaleString(), size, baseCcy);
     const proceedOrder = new OrderImpl({

@@ -3,7 +3,6 @@ import type { OnInit, OnDestroy } from "@angular/core";
 import type { Subscription } from "rxjs/Subscription";
 
 import { Component } from "@angular/core";
-import * as _ from "lodash";
 
 import { WsService } from "../../ws.service";
 
@@ -20,7 +19,7 @@ export class PositionComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.wsService.connect();
     this.subscription = this.wsService.position$.subscribe(x => {
-      this.brokerPositions = _.values(x);
+      this.brokerPositions = Object.values(x);
     });
   }
 

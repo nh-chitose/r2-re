@@ -7,8 +7,6 @@ import type {
   Quote
 } from "../types";
 
-import _ from "lodash";
-
 import "dotenv/config";
 import BrokerApi from "./BrokerApi";
 import { getLogger } from "../logger";
@@ -48,7 +46,7 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
 
     this.setOrderFields(childOrder, order);
     const executions = await this.brokerApi.getExecutions({ child_order_acceptance_id: orderId });
-    order.executions = _.map(executions, x => {
+    order.executions = executions.map(x => {
       const e = toExecution(order);
       e.size = x.size;
       e.price = x.price;
@@ -76,7 +74,7 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
 
   async getBtcPosition(): Promise<number> {
     const balanceResponse = await this.brokerApi.getBalance();
-    const btcBalance = _.find(balanceResponse, b => b.currency_code === "BTC");
+    const btcBalance = balanceResponse.find(b => b.currency_code === "BTC");
     if(!btcBalance){
       throw new Error("Btc balance is not found.");
     }

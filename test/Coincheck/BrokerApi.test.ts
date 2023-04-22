@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import _ from "lodash";
 import nock from "nock";
 
 import nocksetup from "./nocksetup";
@@ -35,9 +34,9 @@ describe("BrokerApi", function(){
   it("getLeveragePositions paging", async () => {
     const api = new BrokerApi("", "");
     const pos1 = await api.getLeveragePositions({ status: "open", limit: 4, order: "desc" });
-    const pos2 = await api.getLeveragePositions({ status: "open", limit: 4, order: "desc", starting_after: _.last(pos1.data)?.id });
-    const pos3 = await api.getLeveragePositions({ status: "open", limit: 4, order: "desc", starting_after: _.last(pos2.data)?.id });
-    const positions = _.concat(pos1.data, pos2.data, pos3.data);
+    const pos2 = await api.getLeveragePositions({ status: "open", limit: 4, order: "desc", starting_after: pos1.data.at(-1)?.id });
+    const pos3 = await api.getLeveragePositions({ status: "open", limit: 4, order: "desc", starting_after: pos2.data.at(-1)?.id });
+    const positions = [...pos1.data, ...pos2.data, ...pos3.data];
     expect(positions.length).to.equal(9);
     expect(positions[1].new_order.created_at.toISOString()).to.equal("2017-10-20T22:41:59.000Z");
   });
@@ -64,8 +63,8 @@ describe("BrokerApi", function(){
     const orderBooks = await api.getOrderBooks();
     expect(orderBooks.asks.length).to.equal(200);
     for(const pair of orderBooks.asks){
-      expect(_.isNumber(pair[0])).to.equal(true);
-      expect(_.isNumber(pair[1])).to.equal(true);
+      expect(typeof pair[0]).to.equal("number");
+      expect(typeof pair[1]).to.equal("number");
       expect(pair[0] > 100000).to.equal(true);
       expect(pair[1] < 100000).to.equal(true);
     }
@@ -83,7 +82,7 @@ describe("BrokerApi", function(){
     const api = new BrokerApi("", "");
     const id = "340809935";
     const reply = await api.cancelOrder(id);
-    expect(_.isString(reply.id)).to.equal(true);
+    expect(typeof reply.id).to.equal("string");
     expect(reply.id).to.equal(id);
   });
 
@@ -102,9 +101,9 @@ describe("BrokerApi", function(){
     expect(typeof reply.data[0].id).to.equal("string");
     expect(reply.data[0].created_at.getFullYear()).to.equal(2017);
     expect(typeof reply.data[0].rate).to.equal("number");
-    expect(_.every(reply.data, d => _.inRange(d.rate, 500000, 700000))).to.equal(true);
-    expect(_.every(reply.data.filter(d => d.side === "buy"), d => _.inRange(d.funds.btc, 0.001, 1))).to.equal(true);
-    expect(_.every(reply.data.filter(d => d.side === "sell"), d => _.inRange(d.funds.btc, -1, -0.001))).to.equal(true);
+    expect(reply.data.every(d => d.rate > 500000 && d.rate < 700000)).to.equal(true);
+    expect(reply.data.filter(d => d.side === "buy").every(d => d.funds.btc > 0.001 && d.funds.btc < 1)).to.equal(true);
+    expect(reply.data.filter(d => d.side === "sell").every(d => d.funds.btc > -1 && d.funds.btc < -0.001)).to.equal(true);
   });
 
   this.afterAll(() => {

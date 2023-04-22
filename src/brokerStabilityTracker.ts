@@ -3,7 +3,6 @@ import "reflect-metadata";
 import type { Broker } from "./types";
 
 import { inject, injectable } from "inversify";
-import _ from "lodash";
 
 import symbols from "./symbols";
 import { ConfigStore } from "./types";
@@ -38,7 +37,7 @@ export default class BrokerStabilityTracker {
     if(this.stabilityMap.has(broker)){
       const counter = this.stability(broker);
       const newValue = counter - 1;
-      this.stabilityMap.set(broker, _.clamp(newValue, MIN, MAX));
+      this.stabilityMap.set(broker, Math.min(Math.max(newValue, MIN), MAX));
     }
   }
 
@@ -61,7 +60,7 @@ export default class BrokerStabilityTracker {
   private increment(broker: Broker) {
     const counter = this.stability(broker);
     const newValue = counter + 1;
-    this.stabilityMap.set(broker, _.clamp(newValue, MIN, MAX));
+    this.stabilityMap.set(broker, Math.min(Math.max(newValue, MIN), MAX));
   }
 
   private recover() {

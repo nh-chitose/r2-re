@@ -9,7 +9,6 @@ import type {
 import type { CashMarginType } from "../types";
 
 import { addMinutes } from "date-fns";
-import _ from "lodash";
 import "dotenv/config";
 
 import BrokerApi from "./BrokerApi";
@@ -48,15 +47,13 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
   }
 
   private mapToQuote(orderBooksResponse: OrderBooksResponse): Quote[] {
-    const asks = _(orderBooksResponse.asks)
-      .take(100)
-      .map(q => toQuote(this.broker, "Ask", q[0], q[1]))
-      .value();
-    const bids = _(orderBooksResponse.bids)
-      .take(100)
-      .map(q => toQuote(this.broker, "Bid", q[0], q[1]))
-      .value();
-    return _.concat(asks, bids);
+    const asks = orderBooksResponse.asks
+      .slice(0, 100)
+      .map(q => toQuote(this.broker, "Ask", q[0], q[1]));
+    const bids = orderBooksResponse.bids
+      .slice(0, 100)
+      .map(q => toQuote(this.broker, "Bid", q[0], q[1]));
+    return [...asks, ...bids];
   }
 
   async send(order: Order): Promise<void> {
@@ -82,8 +79,8 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
 
   async refresh(order: Order): Promise<void> {
     const reply = await this.brokerApi.getOpenOrders();
-    const brokerOrder = _.find(reply.orders, o => o.id === order.brokerOrderId);
-    if(brokerOrder !== undefined){
+    const brokerOrder = reply.orders.find(o => o.id === order.brokerOrderId);
+    if(brokerOrder){
       if(brokerOrder.pending_amount === undefined || brokerOrder.pending_amount === 0){
         throw new Error("Unexpected reply returned.");
       }
@@ -109,7 +106,7 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
       execution.size = Math.abs(x.funds.btc);
       return execution as Execution;
     });
-    order.filledSize = eRound(_.sumBy(order.executions, x => x.size));
+    order.filledSize = eRound(order.executions.reduce((prev, current) => prev + current.size, 0));
     order.status = almostEqual(order.filledSize, order.size, 1) ? "Filled" : "Canceled";
     order.lastUpdated = new Date();
   }

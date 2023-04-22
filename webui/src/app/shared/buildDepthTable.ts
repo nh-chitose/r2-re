@@ -1,7 +1,5 @@
 import type { Quote, DepthLine, BrokerPosition, BrokerMap, ConfigRoot } from "../types";
 
-import * as _ from "lodash";
-
 class DepthTable {
   private readonly depthSize = 100;
   private bestTradableBid: Quote;
@@ -16,38 +14,40 @@ class DepthTable {
   build(): DepthLine[] {
     const asks = this.quotes.filter(q => q.side === "Ask");
     const bids = this.quotes.filter(q => q.side === "Bid");
-    this.bestTradableAsk = _(asks)
+    this.bestTradableAsk = asks
       .filter(q => this.isTradable(q))
-      .minBy("price");
-    this.bestTradableBid = _(bids)
+      .sort((a, b) => a.price - b.price)[0];
+    this.bestTradableBid = bids
       .filter(q => this.isTradable(q))
-      .maxBy("price");
-    const depthLines = _(this.quotes)
-      .groupBy(q => q.price)
-      .map((quotes: Quote[]) => _.reduce(quotes, this.depthReducer.bind(this), this.blankDepthLine()))
-      .orderBy(["priceCell.value"], ["desc"])
-      .value();
-    const middlePart = _(depthLines)
-      .filter(l => l.priceCell.value >= this.bestTradableAsk.price && l.priceCell.value <= this.bestTradableBid.price)
-      .value();
-    const whiskerSize = _.floor((this.depthSize - middlePart.length) / 2);
+      .sort((a, b) => b.price - a.price)[0];
+    const byPriceMap = new Map<number, Quote[]>();
+    this.quotes.forEach(quote => {
+      if(byPriceMap.has(quote.price)){
+        byPriceMap.get(quote.price).push(quote);
+      }else{
+        byPriceMap.set(quote.price, [quote]);
+      }
+    });
+    const depthLines = [...byPriceMap.values()]
+      .map((quotes: Quote[]) => quotes.reduce(this.depthReducer.bind(this), this.blankDepthLine()))
+      .sort((a, b) => b.priceCell.value - a.priceCell.value);
+    const middlePart = depthLines.filter(l => l.priceCell.value >= this.bestTradableAsk.price && l.priceCell.value <= this.bestTradableBid.price);
+    const whiskerSize = Math.floor((this.depthSize - middlePart.length) / 2);
     const residual = (this.depthSize - middlePart.length) % 2;
-    const upperPart = _(depthLines)
-      .takeWhile(l => l.priceCell.value > this.bestTradableBid.price)
-      .takeRight(whiskerSize)
-      .value();
-    const bottomPart = _(depthLines)
-      .takeRightWhile(l => l.priceCell.value < this.bestTradableAsk.price)
-      .take(whiskerSize + residual)
-      .value();
+    const upperPart = depthLines
+      .filter(l => l.priceCell.value > this.bestTradableBid.price)
+      .slice(-whiskerSize);
+    const bottomPart = depthLines
+      .filter(l => l.priceCell.value < this.bestTradableAsk.price)
+      .slice(0, whiskerSize + residual);
     if(middlePart.length <= this.depthSize){
-      return _.concat(upperPart, middlePart, bottomPart);
+      return [...upperPart, ...middlePart, ...bottomPart];
     }
-    return _.concat(
-      _.take(middlePart, this.depthSize / 2),
-      [this.blankDepthLine()],
-      _.takeRight(middlePart, this.depthSize / 2)
-    );
+    return [
+      ...middlePart.slice(0, this.depthSize / 2),
+      this.blankDepthLine(),
+      ...middlePart.slice(-this.depthSize / 2),
+    ];
   }
 
   private isTradable(quote: Quote) {
@@ -55,7 +55,7 @@ class DepthTable {
   }
 
   private largerThanMinSize(quote: Quote) {
-    return quote.volume >= this.config.minSize * _.floor(100 / this.config.maxTargetVolumePercent);
+    return quote.volume >= this.config.minSize * Math.floor(100 / this.config.maxTargetVolumePercent);
   }
 
   private allowedByPosition(quote: Quote) {

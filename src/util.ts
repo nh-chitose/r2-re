@@ -4,26 +4,86 @@ import * as crypto from "crypto";
 import * as os from "os";
 import * as querystring from "querystring";
 
-import _ from "lodash";
+/**
+ * 配列の数学系
+ */
+
+export function max(nums: number[]){
+  if(nums.length) return Math.max.apply(undefined, nums);
+  else return undefined;
+}
+
+export function min(nums: number[]){
+  if(nums.length) return Math.min.apply(undefined, nums);
+  else return undefined;
+}
+
+export function floor(num: number, precision?: number){
+  const modifier = 10 ** precision;
+  return Math.floor(num * modifier) / modifier;
+}
+
+export function round(num: number, precision?: number){
+  const modifier = 10 ** precision;
+  return Math.round(num * modifier) / modifier;
+}
+
+export function eRound(n: number): number {
+  return round(n, 10);
+}
+
+export function mean(arr: number[]){
+  return arr.reduce((acc: number, num: number) => acc + num, 0) / arr.length;
+}
+
+export function sumBy<T>(arr: T[], func: (item: T) => number){
+  return arr.reduce((acc, item) => acc + func(item), 0);
+}
+
+/**
+ * 配列の数学系ここまで
+ */
+
+export function sortArrayBy<T extends { [key in U]: number }, U extends keyof T>(array: T[], key: U){
+  return [...array].sort((a, b) => a[key] - b[key]);
+}
+
+export function groupBy<T, V>(array: T[], key: ((item: T) => V)): { [key: string]: T[] };
+export function groupBy<T extends { [key in U]: V }, U extends keyof T, V>(array: T[], key: U): { [key: string]: T[] };
+export function groupBy<T extends { [key in U]: V }, U extends keyof T, V>(array: T[], key: U | ((item: T) => V)){
+  const keyMap = new Map<V, T[]>();
+  array.forEach(item => {
+    const _key = typeof key === "function" ? key(item) : item[key];
+    if(keyMap.has(_key)){
+      keyMap.get(_key).push(item);
+    }else{
+      keyMap.set(_key, [item]);
+    }
+  });
+  return Object.fromEntries(keyMap.entries()) as { [key: string]: T[] };
+}
 
 interface ToStringable {
   toString: () => string;
 }
 
 export function padStart(s: ToStringable, n: number): string {
-  return _.padStart(s.toString(), n);
+  return s.toString().padStart(n);
 }
 
 export function padEnd(s: ToStringable, n: number): string {
-  return _.padEnd(s.toString(), n);
+  return s.toString().padEnd(n);
 }
 
+/**
+ * @param の数だけハイフンを出力します
+ */
 export function hr(width: number): string {
-  return _.join(_.times(width, _.constant("-")), "");
-}
-
-export function eRound(n: number): number {
-  return _.round(n, 10);
+  let str = "";
+  for(let i = 0; i < width; i++){
+    str += "-";
+  }
+  return str;
 }
 
 export function almostEqual(a: number, b: number, tolerancePercent: number): boolean {
@@ -55,7 +115,12 @@ export const nonce: () => string = (function() {
 }());
 
 export function safeQueryStringStringify(o: any) {
-  const noUndefinedFields = _.pickBy(o, _.negate(_.isUndefined));
+  const noUndefinedFields = Object.assign({}, o);
+  Object.keys(o).forEach(key => {
+    if(o[key] === undefined){
+      delete noUndefinedFields[key];
+    }
+  });
   return querystring.stringify(noUndefinedFields);
 }
 
@@ -81,7 +146,7 @@ export function splitSymbol(symbol: string): { baseCcy: string, quoteCcy: string
 export function formatQuote(quote: Quote) {
   return (
     `${padEnd(quote.broker, 10)} ${quote.side} `
-    + `${padStart(quote.price.toLocaleString(), 7)} ${_.round(quote.volume, 3)}`
+    + `${padStart(quote.price.toLocaleString(), 7)} ${round(quote.volume, 3)}`
   );
 }
 export function getPercentage(part: number, total: number){
@@ -94,9 +159,9 @@ export function getPercentage(part: number, total: number){
 type MemoryUsageInfo = { free: number, total: number, used: number, usage: number };
 
 /**
-  * メモリ使用情報を取得します
-  * @returns メモリ使用情報
-  */
+* メモリ使用情報を取得します
+* @returns メモリ使用情報
+*/
 export function getMemoryInfo(): MemoryUsageInfo{
   const free = getMBytes(os.freemem());
   const total = getMBytes(os.totalmem());

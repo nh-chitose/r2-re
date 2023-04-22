@@ -2,8 +2,6 @@ import type { DepthSizeCell } from "../../../types";
 import type { OnInit } from "@angular/core";
 
 import { Component, Input } from "@angular/core";
-import * as _ from "lodash";
-
 
 @Component({
   selector: "app-depth-size-cell",
@@ -19,7 +17,7 @@ export class DepthSizeCellComponent implements OnInit {
   ngOnInit() {
     this.sizeCellsWithContrast = this.sizeCells.map(sizeCell => {
       const sizeString = sizeCell.value.toLocaleString("ja-JP", { minimumFractionDigits: 3, maximumFractionDigits: 3 });
-      const lowPart = _.takeRightWhile(sizeString, c => c === "0").join("");
+      const lowPart = sizeString.match(/0*$/)[0];
       const highPart = sizeString.slice(0, sizeString.length - lowPart.length);
       return { highPart, lowPart, tradable: sizeCell.tradable, size: sizeCell.value };
     });
@@ -37,7 +35,7 @@ export class DepthSizeCellComponent implements OnInit {
     const direction = this.side === "ask" ? "rtl" : "ltr";
     return {
       background,
-      width: `${_.min([s.size * 50, 100])}%`,
+      width: `${Math.min(s.size * 50, 100)}%`,
       direction,
     };
   }

@@ -9,7 +9,6 @@ import type {
 import { EventEmitter } from "events";
 
 import { injectable, inject } from "inversify";
-import _ from "lodash";
 
 import { LOT_MIN_DECIMAL_PLACE } from "./constants";
 import t from "./i18n";
@@ -24,7 +23,7 @@ import {
   ConfigStore,
   ActivePairStore
 } from "./types";
-import { padEnd, formatQuote } from "./util";
+import { padEnd, formatQuote, round, mean } from "./util";
 
 @injectable()
 export default class OppotunitySearcher extends EventEmitter {
@@ -83,7 +82,7 @@ export default class OppotunitySearcher extends EventEmitter {
     quotes: Quote[]
   ): Promise<{ closable: boolean, key?: string, exitAnalysisResult?: SpreadAnalysisResult }> {
     const { minExitTargetProfit, minExitTargetProfitPercent, exitNetProfitRatio } = this.configStore.config;
-    if([minExitTargetProfit, minExitTargetProfitPercent, exitNetProfitRatio].every(_.isUndefined)){
+    if([minExitTargetProfit, minExitTargetProfitPercent, exitNetProfitRatio].every(d => d === undefined)){
       return { closable: false };
     }
     const activePairsMap = await this.activePairStore.getAll();
@@ -124,15 +123,15 @@ export default class OppotunitySearcher extends EventEmitter {
     const entryProfit = calcProfit(pair).profit;
     const buyLeg = pair.find(o => o.side === "Buy");
     const sellLeg = pair.find(o => o.side === "Sell");
-    const midNotional = _.mean([buyLeg.averageFilledPrice, sellLeg.averageFilledPrice]) * buyLeg.filledSize;
-    const entryProfitRatio = _.round(entryProfit / midNotional * 100, LOT_MIN_DECIMAL_PLACE);
+    const midNotional = mean([buyLeg.averageFilledPrice, sellLeg.averageFilledPrice]) * buyLeg.filledSize;
+    const entryProfitRatio = round(entryProfit / midNotional * 100, LOT_MIN_DECIMAL_PLACE);
     let currentExitCost;
     let currentExitCostRatio;
     let currentExitNetProfitRatio;
     if(exitAnalysisResult){
       currentExitCost = -exitAnalysisResult.targetProfit;
-      currentExitCostRatio = _.round(currentExitCost / midNotional * 100, LOT_MIN_DECIMAL_PLACE);
-      currentExitNetProfitRatio = _.round(
+      currentExitCostRatio = round(currentExitCost / midNotional * 100, LOT_MIN_DECIMAL_PLACE);
+      currentExitNetProfitRatio = round(
         (entryProfit + exitAnalysisResult.targetProfit) / entryProfit * 100,
         LOT_MIN_DECIMAL_PLACE
       );
@@ -148,9 +147,9 @@ export default class OppotunitySearcher extends EventEmitter {
 
   private formatPairSummary(pair: OrderPair, pairSummary: PairSummary) {
     const { entryProfit, entryProfitRatio, currentExitCost } = pairSummary;
-    const entryProfitString = `Entry PL: ${_.round(entryProfit)} JPY (${entryProfitRatio}%)`;
+    const entryProfitString = `Entry PL: ${round(entryProfit)} JPY (${entryProfitRatio}%)`;
     if(currentExitCost){
-      const currentExitCostText = `Current exit cost: ${_.round(currentExitCost)} JPY`;
+      const currentExitCostText = `Current exit cost: ${round(currentExitCost)} JPY`;
       return `[${[
         OrderUtil.toShortString(pair[0]),
         OrderUtil.toShortString(pair[1]),

@@ -1,7 +1,6 @@
 import type { BrokerConfigType } from "../../src/config";
 
 import { expect } from "chai";
-import _ from "lodash";
 import nock from "nock";
 
 import nocksetup from "./nocksetup";

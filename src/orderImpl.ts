@@ -8,10 +8,9 @@ import type {
   TimeInForce,
   OrderStatus } from "./types";
 
-import _ from "lodash";
 import { v4 as uuid } from "uuid";
 
-import { eRound } from "./util";
+import { eRound, sumBy } from "./util";
 
 export interface OrderInit {
   symbol: string;
@@ -58,9 +57,9 @@ export default class OrderImpl implements Order {
   }
 
   get averageFilledPrice(): number {
-    return _.isEmpty(this.executions)
+    return this.executions.length === 0
       ? 0
-      : eRound(_.sumBy(this.executions, x => x.size * x.price) / _.sumBy(this.executions, x => x.size));
+      : eRound(sumBy(this.executions, x => x.size * x.price) / sumBy(this.executions, x => x.size));
   }
 
   get filled(): boolean {
