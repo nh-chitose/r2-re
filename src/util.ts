@@ -1,6 +1,7 @@
 import type { Execution, Order, Broker, QuoteSide, Quote } from "./types";
 
 import * as crypto from "crypto";
+import * as os from "os";
 import * as querystring from "querystring";
 
 /**
