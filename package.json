@@ -26,7 +26,7 @@
     "@bitr/castable": "^1.0.3",
     "@sinclair/typebox": "^0.28.1",
     "abstract-level": "^1.0.3",
-    "ccxt": "^3.0.73",
+    "ccxt": "^3.0.74",
     "core-decorators": "^0.20.0",
     "date-fns": "^2.29.3",
     "decimal.js": "^10.4.3",
