@@ -1,7 +1,6 @@
 import type { Execution, Order, Broker, QuoteSide, Quote } from "./types";
 
 import * as crypto from "crypto";
-import * as os from "os";
 import * as querystring from "querystring";
 
 /**
@@ -159,9 +158,9 @@ export function getPercentage(part: number, total: number){
 type MemoryUsageInfo = { free: number, total: number, used: number, usage: number };
 
 /**
-* メモリ使用情報を取得します
-* @returns メモリ使用情報
-*/
+  * メモリ使用情報を取得します
+  * @returns メモリ使用情報
+  */
 export function getMemoryInfo(): MemoryUsageInfo{
   const free = getMBytes(os.freemem());
   const total = getMBytes(os.totalmem());
