@@ -3,8 +3,7 @@
     "extends": [
       "eslint:recommended",
       "plugin:@typescript-eslint/recommended",
-      "plugin:eslint-comments/recommended",
-      "plugin:you-dont-need-lodash-underscore/all-warn"
+      "plugin:eslint-comments/recommended"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
@@ -15,7 +14,7 @@
       "import",
       "node",
       "named-import-spacing",
-      "you-dont-need-lodash-underscore"
+      "unused-imports"
     ],
     "env": {
       "node": true
@@ -116,6 +115,7 @@
       "@typescript-eslint/require-await": "off",
       "@typescript-eslint/type-annotation-spacing": "warn",
       "@typescript-eslint/no-floating-promises": "warn",
+      "@typescript-eslint/no-unused-vars": "off",
   
       // other plugins
       "eslint-comments/no-unused-disable": "error",
@@ -155,6 +155,11 @@
       "node/no-missing-require": "off",
       "node/shebang": "error",
       "named-import-spacing/named-import-spacing": "warn",
+      "unused-imports/no-unused-imports": "error",
+      "unused-imports/no-unused-vars": [
+        "warn",
+        { "vars": "all", "varsIgnorePattern": "^_", "args": "after-used", "argsIgnorePattern": "^_" }
+      ], 
   
       // eslint rules
       "eol-last": ["error", "always"],
