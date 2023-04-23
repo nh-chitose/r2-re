@@ -1,0 +1,101 @@
+{
+  "language": "en",
+  "debug": true,
+  "demoMode": true,
+  "symbol": "BTC/JPY",
+  "priceMergeSize": 0.001,
+  "maxSize": 0.3,
+  "minSize": 0.001,
+  "minTargetProfit": 1,
+  "minExitTargetProfit": 20,
+  "minExitTargetProfitPercent": 1,
+  "minTargetProfitPercent": 1.0,
+  "exitNetProfitRatio": 20,
+  "maxTargetVolumePercent": 50.0,
+  "iterationInterval": 3000,
+  "positionRefreshInterval": 5000,
+  "sleepAfterSend": 5000,
+  "maxNetExposure": 0.1,
+  "maxRetryCount": 10,
+  "orderStatusCheckInterval": 3000,
+  "stabilityTracker": {
+    "threshold": 8,
+    "recoveryInterval": 300000
+  },
+  "onSingleLeg": {
+    "action": "Reverse",
+    "actionOnExit": "Proceed",
+    "options": {
+      "limitMovePercent": 5,
+      "ttl": 3000
+    }
+  },
+  "analytics": {
+    "enabled": false,
+    "plugin": "SimpleSpreadStatHandler.js",
+    "initialHistory": { "minutes": 30 }
+  },
+  "webGateway": {
+    "enabled": false,
+    "host": "127.0.0.1",
+    "openBrowser": true
+  },
+  "brokers": [
+    {
+      "broker": "Bitflyer",
+      "enabled": true,
+      "maxLongPosition": 0.3,
+      "maxShortPosition": 0,
+      "cashMarginType": "Cash",
+      "commissionPercent": 0,
+      "noTradePeriods": [["04:00", "04:15"]]
+    },
+    {
+      "broker": "Coincheck",
+      "enabled": true,
+      "maxLongPosition": 0.3,
+      "maxShortPosition": 0.15,
+      "cashMarginType": "Cash",
+      "commissionPercent": 0
+    },
+    {
+      "broker": "Quoine",
+      "enabled": false,
+      "maxLongPosition": 0.15,
+      "maxShortPosition": 0.15,
+      "cashMarginType": "NetOut",
+      "leverageLevel": 10,
+      "commissionPercent": 0
+    },
+    {
+      "broker": "Bitbankcc",
+      "enabled": false,
+      "maxLongPosition": 0.03,
+      "maxShortPosition": 0,
+      "cashMarginType": "Cash",
+      "commissionPercent": 0
+    },
+    {
+      "broker": "Btcbox",
+      "enabled": false,
+      "maxLongPosition": 0.03,
+      "maxShortPosition": 0,
+      "cashMarginType": "Cash",
+      "commissionPercent": 0
+    }
+  ],
+  "logging": {
+    "slack": {
+      "enabled": false,
+      "url": "https://hooks.slack.com/services/xxxxxx",
+      "channel": "#ch1",
+      "username": "abc",
+      "keywords": ["error", "profit"]
+    },
+    "line": {
+      "enabled": false,
+      "token": "TOKEN",
+      "keywords": ["error", "profit"]
+    }
+  }
+}
