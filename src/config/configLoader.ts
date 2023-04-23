@@ -46,7 +46,7 @@ class ConfigLoader {
   }
   
   load(){
-    const configPath = path.join(process.cwd(), "./config.json");
+    const configPath = path.join(process.cwd(), "./config_test.json");
 
     if(!fs.existsSync(configPath)){
       console.error("There's no configure file.");
