@@ -35,11 +35,11 @@ export default class SpreadAnalyzer {
     if(closingPair && closingPair[0].size !== closingPair[1].size){
       throw new Error("Invalid closing pair.");
     }
-
     const { config } = this.configStore;
     if(Object.keys(positionMap || {}).length === 0){
       throw new Error("Position map is empty.");
     }
+    console.log(quotes); /////////////////////////////ここ
     let filteredQuotes = sortArrayBy(
       quotes
         .filter(q => this.isAllowedByCurrentPosition(q, positionMap[q.broker]))
@@ -182,6 +182,8 @@ export default class SpreadAnalyzer {
   }
 
   private isAllowedByCurrentPosition(q: Quote, pos: BrokerPosition): boolean {
-    return q.side === "Bid" ? pos.shortAllowed : pos.longAllowed;
+    return q.side === "Bid"
+      ? pos.shortAllowed
+      : pos.longAllowed;
   }
 } /* istanbul ignore next */

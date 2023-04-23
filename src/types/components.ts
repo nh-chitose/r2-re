@@ -9,7 +9,7 @@ export interface BrokerAdapter {
   send: (order: Order) => Promise<void>;
   refresh: (order: Order) => Promise<void>;
   cancel: (order: Order) => Promise<void>;
-  getBtcPosition: () => Promise<number>;
+  getPosition: () => Promise<number>;
   fetchQuotes: () => Promise<Quote[]>;
 }
 

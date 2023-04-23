@@ -2,14 +2,13 @@ import type {
   LeveragePositionsRequest,
   NewOrderRequest,
   Pagination,
-  Transaction } from "./types";
+  Transaction,
+  LeveragePosition } from "./types";
 
 import { setTimeout } from "timers";
 
-import {
-  LeveragePosition,
-  CloseOrder,
-  NewOrder } from "./types";
+import { Value } from "@sinclair/typebox/value";
+
 import {
   AccountsBalanceResponse,
   LeveragePositionsResponse,
@@ -55,16 +54,7 @@ export default class BrokerApi {
 
   async getAllOpenLeveragePositions(limit: number = 20): Promise<LeveragePosition[]> {
     if(this.leveragePositionsCache){
-      return this.leveragePositionsCache.map(d => Object.assign(new LeveragePosition({}), d, {
-        close_orders: d.close_orders.map(order => Object.assign(new CloseOrder({}), order, {
-          created_at: new Date(order.created_at.toString()),
-        })),
-        created_at: new Date(d.created_at.toString()),
-        new_order: Object.assign(new NewOrder({}), {
-          ...d.new_order,
-          created_at: new Date(d.created_at.toString()),
-        }),
-      }));
+      return Value.Clone(this.leveragePositionsCache);
     }
     let result: LeveragePosition[] = [];
     const request: LeveragePositionsRequest = { limit, status: "open", order: "desc" };

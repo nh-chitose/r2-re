@@ -56,7 +56,7 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
     order.status = "Canceled";
   }
 
-  async getBtcPosition(): Promise<number> {
+  async getPosition(): Promise<number> {
     const strategy = this.strategyMap.get(this.config.cashMarginType);
     if(strategy === undefined){
       throw new Error(`Unable to find a strategy for ${this.config.cashMarginType}.`);

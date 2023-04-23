@@ -1,5 +1,7 @@
 import type { Quote, DepthLine, BrokerPosition, BrokerMap, ConfigRoot } from "../types";
 
+import { floor } from "../util";
+
 class DepthTable {
   private readonly depthSize = 100;
   private bestTradableBid: Quote;
@@ -32,7 +34,7 @@ class DepthTable {
       .map((quotes: Quote[]) => quotes.reduce(this.depthReducer.bind(this), this.blankDepthLine()))
       .sort((a, b) => b.priceCell.value - a.priceCell.value);
     const middlePart = depthLines.filter(l => l.priceCell.value >= this.bestTradableAsk.price && l.priceCell.value <= this.bestTradableBid.price);
-    const whiskerSize = Math.floor((this.depthSize - middlePart.length) / 2);
+    const whiskerSize = floor((this.depthSize - middlePart.length) / 2);
     const residual = (this.depthSize - middlePart.length) % 2;
     const upperPart = depthLines
       .filter(l => l.priceCell.value > this.bestTradableBid.price)
@@ -55,7 +57,7 @@ class DepthTable {
   }
 
   private largerThanMinSize(quote: Quote) {
-    return quote.volume >= this.config.minSize * Math.floor(100 / this.config.maxTargetVolumePercent);
+    return quote.volume >= this.config.minSize * floor(100 / this.config.maxTargetVolumePercent);
   }
 
   private allowedByPosition(quote: Quote) {

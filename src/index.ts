@@ -117,7 +117,7 @@ export default class AppRoot {
   logGeneralInfo(){
     const memory = Util.getMemoryInfo();
     this.logger.trace(
-      `[Tick] Free:${Math.floor(memory.free)}MB; Total:${Math.floor(memory.total)}MB; Usage:${memory.usage}%`
+      `[Tick] Free:${Util.floor(memory.free)}MB; Total:${Util.floor(memory.total)}MB; Usage:${memory.usage}%`
     );
     const nMem = process.memoryUsage();
     const rss = Util.getMBytes(nMem.rss);
