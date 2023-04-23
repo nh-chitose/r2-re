@@ -9,7 +9,7 @@ import BrokerAdapterRouter from "./brokerAdapterRouter";
 import { getLogger } from "./logger";
 import symbols from "./symbols";
 import { ConfigStore } from "./types";
-import { groupBy, sumBy } from "./util";
+import { groupBy, sumBy, floor } from "./util";
 
 @injectable()
 export default class QuoteAggregator extends AwaitableEventEmitter {
@@ -54,7 +54,8 @@ export default class QuoteAggregator extends AwaitableEventEmitter {
       const fetchTasks = enabledBrokers.map(x => this.brokerAdapterRouter.fetchQuotes(x));
       const quotesMap = await Promise.all(fetchTasks);
       const allQuotes = quotesMap.flatMap(d => d);
-      await this.setQuotes(this.fold(allQuotes, this.configStore.config.priceMergeSize));
+      //await this.setQuotes(this.fold(allQuotes, this.configStore.config.priceMergeSize));
+      await this.setQuotes(allQuotes);
       this.logger.debug("Aggregated.");
     } catch(ex){
       this.logger.error(ex.message);
@@ -97,7 +98,7 @@ export default class QuoteAggregator extends AwaitableEventEmitter {
 
   private fold(quotes: Quote[], step: number): Quote[] {
     const grouped = groupBy(quotes, q => {
-      const price = q.side === "Ask" ? Math.ceil(q.price / step) * step : Math.floor(q.price / step) * step;
+      const price = q.side === "Ask" ? Math.ceil(q.price / step) * step : floor(q.price / step) * step;
       return [price, q.broker, q.side].join("#");
     });
     return Object.keys(grouped).map(key => {

@@ -55,7 +55,6 @@ export default class OppotunitySearcher extends EventEmitter {
       await this.activePairStore.del(closablePairKey);
       return { found: true, spreadAnalysisResult, closable };
     }
-
     try{
       const spreadAnalysisResult = await this.spreadAnalyzer.analyze(quotes, this.positionService.positionMap);
       this.printSpreadAnalysisResult(spreadAnalysisResult);

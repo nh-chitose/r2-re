@@ -49,7 +49,7 @@ export default class SingleLegHandler {
     const smallLeg = orders[0].filledSize <= orders[1].filledSize ? orders[0] : orders[1];
     const largeLeg = orders[0].filledSize <= orders[1].filledSize ? orders[1] : orders[0];
     const sign = largeLeg.side === "Buy" ? -1 : 1;
-    const price = Math.round(largeLeg.price * (1 + sign * options.limitMovePercent / 100));
+    const price = round(largeLeg.price * (1 + sign * options.limitMovePercent / 100));
     const size = floor(largeLeg.filledSize - smallLeg.filledSize, LOT_MIN_DECIMAL_PLACE);
     const { baseCcy } = splitSymbol(this.symbol);
     this.logger.info(t`ReverseFilledLeg`, OrderUtil.toShortString(largeLeg), price.toLocaleString(), size, baseCcy);

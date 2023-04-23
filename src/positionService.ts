@@ -47,7 +47,7 @@ export default class PositionService extends EventEmitter {
 
   print(): void {
     const { baseCcy } = splitSymbol(this.configStore.config.symbol);
-    const isOk = (b: any) => b ? "OK" : "NG";
+    const isOk = (b: boolean) => b ? "OK" : "NG";
     const formatBrokerPosition = (brokerPosition: BrokerPosition) =>
       `${padEnd(brokerPosition.broker, 10)}: ${padStart(round(brokerPosition.baseCcyPosition, 3), 6)} ${baseCcy}, `
       + `${t`LongAllowed`}: ${isOk(brokerPosition.longAllowed)}, `
@@ -60,7 +60,6 @@ export default class PositionService extends EventEmitter {
       this.logger.info(`${formatBrokerPosition(position)} (Stability: ${stability})`);
     });
     this.logger.info(hr(50));
-    this.logger.debug(JSON.stringify(this.positionMap));
   }
 
   get netExposure() {
