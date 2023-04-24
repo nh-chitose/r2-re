@@ -1,10 +1,21 @@
-# R2 Bitcoin Arbitrager
+> :warning:現在レガシーであるコアエンジンを使用して、リファクタリングの実施中で正常な動作は保証できません。PRは大歓迎しております。
 
-[日本語はこちら](http://qiita.com/bitrinjani/items/3ed756da9baf7d171306)
+> :warning:We're now refactoring the app with legacy core engine. So it won't perform correctly. PRs are always welcomed.
 
-[![Coverage Status](https://coveralls.io/repos/github/bitrinjani/r2/badge.svg?branch=master&i=5)](https://coveralls.io/github/bitrinjani/r2?branch=master)
+# R2-re Bitcoin Arbitrager
 
-R2 Bitcoin Arbitrager is an automatic arbitrage trading application targeting Bitcoin exchanges.
+Originally forked from [@bitrinjani/r2](https://github.com/bitrinjani/r2)
+
+![GitHub package.json dependency version (prod)](https://img.shields.io/github/package-json/dependency-version/nh-chitose/r2-re/ccxt)
+[![CodeQL](https://github.com/nh-chitose/r2-re/actions/workflows/codeql.yml/badge.svg)](https://github.com/nh-chitose/r2-re/actions/workflows/codeql.yml)
+![GitHub](https://img.shields.io/github/license/nh-chitose/r2-re)
+![GitHub Repo stars](https://img.shields.io/github/stars/nh-chitose/r2-re?style=social)
+
+R2-reはNode.jsとTypeScriptで製作されたビットコインの自動裁定取引システムです
+
+R2-re Bitcoin Arbitrager is an automatic arbitrage trading system powered by Node.js + TypeScript.
+
+:warning: 以下の説明は古いNode.jsで正常に動作していたときのもので、現在は依存関係のインストールが出来ないためオリジナル版は動作しません！ :warning:
 
 ## Web UI Mode
 
@@ -20,14 +31,14 @@ Console mode is for CUI-only environment like Linux boxes with no GUI.
 
 ## Getting Started
 
-1. Install [Node.js](https://nodejs.org) 8.5 or newer.
+1. Install [Node.js](https://nodejs.org) 16.6.0 or newer.
 2. Clone this repository.
 
   ```bash
-    git clone https://github.com/bitrinjani/r2.git
+    git clone https://github.com/nh-chitose/r2-re.git
   ```
 
-3. Run `npm install`. (or `yarn`)
+3. Run `npm install`.
 
 ```bash
 cd r2
@@ -41,27 +52,10 @@ npm install
 7. Start the application by `npm start` or `yarn start`.
 
 ```bash
-npm start
+npm run start
 ```
 
 8. Open http://127.0.0.1:8720 in Chrome.
-
-or
-
-1. Install [Docker](https://docs.docker.com/engine/installation/)
-2. Clone this repository.
-
-  ```bash
-  git clone https://github.com/bitrinjani/r2.git
-  ```
-
-3. Run `docker build` and `docker run`.
-
-  ```
-  cd r2
-  docker build -t r2:latest .
-  docker run --rm -it r2:latest
-  ```
 
 ### Prerequisites
 
@@ -79,13 +73,11 @@ R2 supports the following exchanges.
 
 |Exchange|Cash|Margin|
 |----|------|-----------|
-|bitFlyer|✔️|✔️*|
+|bitFlyer|✔️||
 |Quoine|✔️|✔️|
 |Coincheck|✔️|✔️|
 |bitbank.cc|️️️✔️||
 |BTCBox|✔️||
-
-*bitFlyer margin trading (BTC-FX/JPY) is available as a [broker plugin](https://github.com/bitrinjani/bitflyer-fx).
 
 ## How it works
 
@@ -100,7 +92,6 @@ After the spread has became smaller than the configured value, `exitNetProfitRat
 
 ## Architecture Overview
 
-- Pluggable architecture: User can add new exchanges/brokers as an npm package like [bitflyer-fx plugin](https://github.com/bitrinjani/bitflyer-fx)
 - Concurrency: All API calls to exchanges are concurrently sent/handled.
 - ️Dynamic configuration: User can dynamically update the configuration based on spread statistics by a simple js script, like setting `minTargetProfitPercent` to μ + σ every few seconds.
 
@@ -133,7 +124,7 @@ All configurations are stored in `config.json`.
 |orderStatusCheckInterval|Millisecond|Time lapse in milliseconds to check if arbitrage orders are filled or not.|
 |stabilityTracker|-|See stabilityTracker config below|
 |onSingleLeg|-|See onSingleLeg config below|
-|analytics|-|See [ANALYTICS_PLUGIN.md](https://github.com/bitrinjani/r2/blob/master/docs/ANALYTICS_PLUGIN.md)|
+|analytics|-|See [ANALYTICS_PLUGIN.md](https://github.com/nh-chitose/r2-re/blob/master/docs/ANALYTICS_PLUGIN.md)|
 |webGateway|-|See webGateway config details below|
 
 #### webGateway config details
@@ -197,11 +188,11 @@ The onSingleLeg config specifies what action should be taken when only one leg i
 - action: Action to be taken when only one leg is opened.
 
     - Cancel: Cancel the unfilled order.
-    - Reverse: After canceling the unfilled order, R2 sends a limit order to the opposite side of the filled order. The limit price depends on limitMovePercent config. 
+    - Reverse: After canceling the unfilled order, R2 sends a limit order to the opposite side of the filled order. The limit price depends on limitMovePercent config.
     - Proceed: After canceling the unfilled order, R2 sends another order to the same side of the unfilled order. The limit price depends on limitMovePercent config.
 - actionOnExit: Action to be taken when only one leg is closed. Cancel, Reverse, or Proceed.
 - options
-    - limitMovePercent: Set the limit price created by the action to the price worse than the original order by limitMovePercent %. 
+    - limitMovePercent: Set the limit price created by the action to the price worse than the original order by limitMovePercent %.
     - ttl: Time to Live of the limit order created by the action。
 
 ### Broker config
@@ -321,14 +312,14 @@ All log files are saved under `logs` directory.
 
 Several utility scripts are available to close positions, show balances and clear cache.
 
-See [TOOLS.md](https://github.com/bitrinjani/r2/blob/master/docs/TOOLS.md)
+See [TOOLS.md](https://github.com/nh-chitose/r2-re/blob/master/docs/TOOLS.md)
 
 ## Running the tests
 
-`test` script runs [ts-jest](https://github.com/kulshekhar/ts-jest).
+`test` script runs [mocha](https://mochajs.org/).
 
 ```sh
-npm test
+npm run test
 ```
 
 ## License
@@ -338,7 +329,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Disclaimer
 
 USE THE SOFTWARE AT YOUR OWN RISK. YOU ARE RESPONSIBLE FOR YOUR OWN MONEY. THE AUTHOR HAS NO RESPONSIBILITY FOR YOUR TRADING RESULTS.
-
-## Inspirations
-
-[Blackbird](https://github.com/butor/blackbird), which targets US exchanges. 
