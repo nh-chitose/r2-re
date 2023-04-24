@@ -1,12 +1,12 @@
 import type { PriceLevelsResponse, SendOrderRequest, OrdersResponse, CashMarginTypeStrategy } from "./types";
-import type { BrokerConfigType } from "../config";
+import type { BrokerConfigType } from "../../config";
 import type {
   BrokerAdapter,
   Order,
   Execution,
   Quote
-} from "../types";
-import type { CashMarginType } from "../types";
+} from "../../types";
+import type { CashMarginType } from "../../types";
 
 import Decimal from "decimal.js";
 import "dotenv/config";
@@ -14,7 +14,7 @@ import "dotenv/config";
 import BrokerApi from "./BrokerApi";
 import CashStrategy from "./CashStrategy";
 import NetOutStrategy from "./NetOutStrategy";
-import { toExecution, toQuote } from "../util";
+import { toExecution, toQuote } from "../../util";
 
 function timestampToDate(n: number): Date {
   return new Date(n * 1000);
@@ -37,8 +37,7 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
     if(order.broker !== this.broker){
       throw new Error();
     }
-    const request = this.mapOrderToSendOrderRequest(order);
-    const response = await this.brokerApi.sendOrder(request);
+    const response = await this.brokerApi.sendOrder();
     order.brokerOrderId = response.id.toString();
     order.status = "New";
     order.sentTime = new Date();
@@ -46,7 +45,7 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
   }
 
   async refresh(order: Order): Promise<void> {
-    const ordersResponse = await this.brokerApi.getOrders(order.brokerOrderId);
+    const ordersResponse = await this.brokerApi.getOrders();
     this.setOrderFields(ordersResponse, order);
   }
 

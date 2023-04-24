@@ -1,7 +1,4 @@
 import type {
-  LeveragePositionsRequest,
-  NewOrderRequest,
-  Pagination,
   Transaction,
   LeveragePosition } from "./types";
 
@@ -19,7 +16,7 @@ import {
   TransactionsResponse,
   LeverageBalanceResponse
 } from "./types";
-import { hmac, nonce, safeQueryStringStringify } from "../util";
+import { hmac, nonce, safeQueryStringStringify } from "../../util";
 import WebClient from "../webClient";
 
 export default class BrokerApi {
@@ -31,25 +28,19 @@ export default class BrokerApi {
   constructor(private readonly key: string, private readonly secret: string) {}
 
   async getAccountsBalance(): Promise<AccountsBalanceResponse> {
-    const path = "/api/accounts/balance";
-    return new AccountsBalanceResponse(await this.get<AccountsBalanceResponse>(path));
+    return new AccountsBalanceResponse();
   }
 
   async getLeverageBalance(): Promise<LeverageBalanceResponse> {
-    const path = "/api/accounts/leverage_balance";
-    return new LeverageBalanceResponse(await this.get<LeverageBalanceResponse>(path));
+    return new LeverageBalanceResponse();
   }
 
   async getOpenOrders(): Promise<OpenOrdersResponse> {
-    const path = "/api/exchange/orders/opens";
-    return new OpenOrdersResponse(await this.get<OpenOrdersResponse>(path));
+    return new OpenOrdersResponse();
   }
 
-  async getLeveragePositions(request?: LeveragePositionsRequest): Promise<LeveragePositionsResponse> {
-    const path = "/api/exchange/leverage/positions";
-    return new LeveragePositionsResponse(
-      await this.get<LeveragePositionsResponse, LeveragePositionsRequest>(path, request)
-    );
+  async getLeveragePositions(): Promise<LeveragePositionsResponse> {
+    return new LeveragePositionsResponse();
   }
 
   async getAllOpenLeveragePositions(limit: number = 20): Promise<LeveragePosition[]> {
@@ -57,15 +48,13 @@ export default class BrokerApi {
       return Value.Clone(this.leveragePositionsCache);
     }
     let result: LeveragePosition[] = [];
-    const request: LeveragePositionsRequest = { limit, status: "open", order: "desc" };
-    let reply = await this.getLeveragePositions(request);
+    let reply = await this.getLeveragePositions();
     while(reply.data !== undefined && reply.data.length > 0){
       result = [...result, ...reply.data];
       if(reply.data.length < limit){
         break;
       }
-      const last = reply.data[reply.data.length - 1];
-      reply = await this.getLeveragePositions({ ...request, starting_after: last.id });
+      reply = await this.getLeveragePositions();
     }
     this.leveragePositionsCache = result;
     setTimeout(() => this.leveragePositionsCache = undefined, BrokerApi.CACHE_MS);
@@ -73,37 +62,31 @@ export default class BrokerApi {
   }
 
   async getOrderBooks(): Promise<OrderBooksResponse> {
-    const path = "/api/order_books";
-    return new OrderBooksResponse(await this.webClient.fetch<OrderBooksResponse>(path, undefined, false));
+    return new OrderBooksResponse();
   }
 
-  async newOrder(request: NewOrderRequest): Promise<NewOrderResponse> {
-    const path = "/api/exchange/orders";
-    return new NewOrderResponse(await this.post<NewOrderResponse, NewOrderRequest>(path, request));
+  async newOrder(): Promise<NewOrderResponse> {
+    return new NewOrderResponse();
   }
 
-  async cancelOrder(orderId: string): Promise<CancelOrderResponse> {
-    const path = `/api/exchange/orders/${orderId}`;
-    return new CancelOrderResponse(await this.delete<CancelOrderResponse>(path));
+  async cancelOrder(): Promise<CancelOrderResponse> {
+    return new CancelOrderResponse();
   }
 
-  async getTransactions(pagination: Partial<Pagination>): Promise<TransactionsResponse> {
-    const path = "/api/exchange/orders/transactions_pagination";
-    return new TransactionsResponse(await this.get<TransactionsResponse, Partial<Pagination>>(path, pagination));
+  async getTransactions(): Promise<TransactionsResponse> {
+    return new TransactionsResponse();
   }
 
   async getTransactionsWithStartDate(from: Date): Promise<Transaction[]> {
     let transactions: Transaction[] = [];
-    const pagination = { order: "desc", limit: 20 } as Partial<Pagination>;
-    let res: TransactionsResponse = await this.getTransactions(pagination);
+    let res: TransactionsResponse = await this.getTransactions();
     while(res.data.length > 0){
       const last = res.data[res.data.length - 1];
       transactions = transactions.concat(res.data.filter(x => from < x.created_at));
       if(from > last.created_at || res.pagination.limit > res.data.length){
         break;
       }
-      const lastId = last.id;
-      res = await this.getTransactions({ ...pagination, starting_after: lastId });
+      res = await this.getTransactions();
     }
     return transactions;
   }

@@ -1,6 +1,6 @@
 import type BrokerApi from "./BrokerApi";
 import type { CashMarginTypeStrategy } from "./types";
-import type { Order } from "../types";
+import type { Order } from "../../types";
 
 export default class CashStrategy implements CashMarginTypeStrategy {
   constructor(private readonly brokerApi: BrokerApi) {}
@@ -9,13 +9,7 @@ export default class CashStrategy implements CashMarginTypeStrategy {
     if(order.cashMarginType !== "Cash"){
       throw new Error();
     }
-    const request = {
-      pair: "btc_jpy",
-      order_type: this.getBrokerOrderType(order),
-      amount: order.size,
-      rate: order.price,
-    };
-    const reply = await this.brokerApi.newOrder(request);
+    const reply = await this.brokerApi.newOrder();
     if(!reply.success){
       throw new Error("Send failed.");
     }
