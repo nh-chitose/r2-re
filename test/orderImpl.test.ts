@@ -7,7 +7,7 @@ import { toExecution } from "../src/util";
 
 describe("Order", () => {
   it("averageFilledPrice", () => {
-    const target = createOrder("Bitflyer", "Buy", 0.01, 1000, "Cash", "Limit", 1);
+    const target = createOrder("Bitflyer", "buy", 0.01, 1000, "Cash", "limit", 1);
     const ex1 = toExecution(target);
     ex1.price = 1100;
     ex1.size = 0.004;

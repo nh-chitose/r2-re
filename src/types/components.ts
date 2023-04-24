@@ -5,11 +5,11 @@ import type OrderImpl from "../orderImpl";
 import type { EventEmitter } from "events";
 
 export interface BrokerAdapter {
+  getBtcPosition: () => Promise<number>;
   broker: Broker;
   send: (order: Order) => Promise<void>;
   refresh: (order: Order) => Promise<void>;
   cancel: (order: Order) => Promise<void>;
-  getPosition: () => Promise<number>;
   fetchQuotes: () => Promise<Quote[]>;
 }
 

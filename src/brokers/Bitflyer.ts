@@ -34,6 +34,7 @@ async function main(envs: object) {
 export function create(config: BrokerConfigType){
   return new BrokerAdapterImpl(config);
 }
+
 export default class BrokerAdapterImpl /*implements BrokerAdapter*/ {
   readonly broker = "Bitflyer";
   private readonly api = main(keys);
@@ -48,14 +49,14 @@ export default class BrokerAdapterImpl /*implements BrokerAdapter*/ {
 
   private mapToQuote(orderBooksResponse: any): Quote[] {
     const asks = orderBooksResponse.asks;
-    const mappedAsks = new Array(asks.map((q: any) => toQuote(this.broker, "Ask", q[0], q[1])));
+    const mappedAsks = asks.map((q: any) => toQuote(this.broker, "Ask", q[0], q[1]));
     const bids = orderBooksResponse.bids;
-    const mappedBids = new Array(bids.map((q: any) => toQuote(this.broker, "Bid", q[0], q[1])));
+    const mappedBids = bids.map((q: any) => toQuote(this.broker, "Bid", q[0], q[1]));
     return mappedAsks.concat(mappedBids);
   }
 
   async getBtcPosition(): Promise<number> {
-    const balance = (await (await this.api).fetchBalance()).info;
+    const balance = (await (await this.api).fetchBalance()).info.btc;
     return balance;
   }
 

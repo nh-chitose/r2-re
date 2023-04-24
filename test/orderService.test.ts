@@ -21,18 +21,18 @@ describe("OrderService", () => {
     const order = os.createOrder({
       symbol: "BTC/JPY",
       broker: "Dummy",
-      side: "Buy",
+      side: "buy",
       size: 0.001,
       price: 1000000,
       cashMarginType: "Cash",
-      type: "Limit",
+      type: "limit",
       leverageLevel: 1,
     });
     await delay(0);
     expect(order.status).to.equal("PendingNew");
     expect(orderCreated).to.be.called();
 
-    order.status = "Filled";
+    order.status = "executed";
     os.emitOrderUpdated(order);
     await delay(0);
     expect(orderUpdatedArgs[0][0].status).to.equal("Filled");

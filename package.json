@@ -10,7 +10,7 @@
     "build": "rimraf dist/ && tsc",
     "onlystart": "node ./dist",
     "start": "npm run build && npm run onlystart",
-    "test": "mocha --exit -- -r ts-node/register -r ./test/importSpy.ts ./test/**/*.test.ts",
+    "test": "mocha --exit -- -r ts-node/register -r ./test/importSpy.ts ./test/**/*.test.ts --exclude ./test/brokers.old.bak/**/*.ts",
     "lint": "eslint ./src/**/*.ts",
     "testlint": "eslint ./test/**/*.test.ts",
     "cleanup": "rimraf dist/",

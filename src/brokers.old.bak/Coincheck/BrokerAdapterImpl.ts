@@ -33,7 +33,7 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
     ]);
   }
 
-  async getPosition(): Promise<number> {
+  async getBtcPosition(): Promise<number> {
     const strategy = this.strategyMap.get(this.config.cashMarginType);
     if(strategy === undefined){
       throw new Error(`Unable to find a strategy for ${this.config.cashMarginType}.`);

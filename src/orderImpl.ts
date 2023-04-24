@@ -43,9 +43,9 @@ export default class OrderImpl implements Order {
   leverageLevel: number;
   id: string = uuid();
   symbol: string;
-  timeInForce: TimeInForce = "None";
+  timeInForce: TimeInForce = "PO";
   brokerOrderId: string;
-  status: OrderStatus = "PendingNew";
+  status: OrderStatus = "open";
   filledSize = 0;
   creationTime: Date = new Date();
   sentTime: Date;
@@ -63,7 +63,7 @@ export default class OrderImpl implements Order {
   }
 
   get filled(): boolean {
-    return this.status === "Filled";
+    return this.status === "executed";
   }
 
   get filledNotional(): number {

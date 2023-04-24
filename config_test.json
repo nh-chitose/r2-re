@@ -5,17 +5,17 @@
   "symbol": "BTC/JPY",
   "priceMergeSize": 0.001,
   "maxSize": 0.3,
-  "minSize": 0.001,
+  "minSize": 0.0001,
   "minTargetProfit": 1,
   "minExitTargetProfit": 20,
   "minExitTargetProfitPercent": 1,
-  "minTargetProfitPercent": 1.0,
+  "minTargetProfitPercent": 0.1,
   "exitNetProfitRatio": 20,
   "maxTargetVolumePercent": 50.0,
-  "iterationInterval": 3000,
+  "iterationInterval": 1500,
   "positionRefreshInterval": 5000,
   "sleepAfterSend": 5000,
-  "maxNetExposure": 0.1,
+  "maxNetExposure": 1,
   "maxRetryCount": 10,
   "orderStatusCheckInterval": 3000,
   "stabilityTracker": {
@@ -45,7 +45,7 @@
       "broker": "Bitflyer",
       "enabled": true,
       "maxLongPosition": 0.3,
-      "maxShortPosition": 0,
+      "maxShortPosition": 0.3,
       "cashMarginType": "Cash",
       "commissionPercent": 0,
       "noTradePeriods": [["04:00", "04:15"]]
@@ -54,15 +54,15 @@
       "broker": "Coincheck",
       "enabled": true,
       "maxLongPosition": 0.3,
-      "maxShortPosition": 0.15,
+      "maxShortPosition": 0.3,
       "cashMarginType": "Cash",
       "commissionPercent": 0
     },
     {
       "broker": "Quoine",
       "enabled": false,
-      "maxLongPosition": 0.15,
-      "maxShortPosition": 0.15,
+      "maxLongPosition": 0.3,
+      "maxShortPosition": 0.3,
       "cashMarginType": "NetOut",
       "leverageLevel": 10,
       "commissionPercent": 0
@@ -70,16 +70,16 @@
     {
       "broker": "Bitbankcc",
       "enabled": false,
-      "maxLongPosition": 0.03,
-      "maxShortPosition": 0,
+      "maxLongPosition": 0.3,
+      "maxShortPosition": 0.3,
       "cashMarginType": "Cash",
       "commissionPercent": 0
     },
     {
       "broker": "Btcbox",
       "enabled": false,
-      "maxLongPosition": 0.03,
-      "maxShortPosition": 0,
+      "maxLongPosition": 0.3,
+      "maxShortPosition": 0.3,
       "cashMarginType": "Cash",
       "commissionPercent": 0
     }

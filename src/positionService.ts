@@ -98,7 +98,7 @@ export default class PositionService extends EventEmitter {
 
   private async getBrokerPosition(brokerConfig: BrokerConfigType, minSize: number): Promise<BrokerPosition> {
     const { baseCcy } = splitSymbol(this.configStore.config.symbol);
-    const positions = await this.brokerAdapterRouter.getPositions(brokerConfig.broker);
+    const positions = await this.brokerAdapterRouter.getBtcPositions(brokerConfig.broker);
     const baseCcyPosition = positions.get(baseCcy);
     if(baseCcyPosition === undefined){
       throw new Error(`Unable to find base ccy position in ${brokerConfig.broker}. ${JSON.stringify([...positions])}`);

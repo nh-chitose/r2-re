@@ -13,7 +13,7 @@ describe("LineIntegration", function(){
   it("line", () => {
     const config = {
       enabled: true,
-      token: "TOKEN",
+      token: "xxxxx",
       keywords: ["error", "profit"],
     } as object;
     const line = new LineIntegration(config);
@@ -24,7 +24,7 @@ describe("LineIntegration", function(){
   it("line with no keyword", () => {
     const config = {
       enabled: true,
-      token: "TOKEN",
+      token: "xxxxx",
     } as object;
     const line = new LineIntegration(config);
     line.handler("test message");
@@ -34,7 +34,7 @@ describe("LineIntegration", function(){
   it("line error 500 response", () => {
     const config = {
       enabled: true,
-      token: "TOKEN",
+      token: "xxxxx",
       keywords: ["error", "profit"],
     } as object;
     const line = new LineIntegration(config);
@@ -44,7 +44,7 @@ describe("LineIntegration", function(){
   it("line exception response", async () => {
     const config = {
       enabled: true,
-      token: "TOKEN",
+      token: "xxxxx",
       keywords: ["error", "profit"],
     } as object;
     const line = new LineIntegration(config);

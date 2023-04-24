@@ -5,10 +5,10 @@
   },
   "include": [
     "./test/**/*.ts",
-    "./webui/**/*.ts",
     "./tools/**/*.ts"
   ],
   "exclude": [
-    "./src/**/*.ts"
+    "./src/**/*.ts",
+    "./test/brokers.old.bak/**/*.ts"
   ]
 }

@@ -21,6 +21,7 @@ import symbols from "./symbols";
 import { ConfigStore } from "./types";
 import { min, floor, round, mean, sumBy, sortArrayBy, groupBy } from "./util";
 
+
 @injectable()
 export default class SpreadAnalyzer {
   private readonly logger = getLogger(this.constructor.name);
@@ -39,20 +40,19 @@ export default class SpreadAnalyzer {
     if(Object.keys(positionMap || {}).length === 0){
       throw new Error("Position map is empty.");
     }
-    console.log(quotes); /////////////////////////////ここ
     let filteredQuotes = sortArrayBy(
       quotes
         .filter(q => this.isAllowedByCurrentPosition(q, positionMap[q.broker]))
-        .filter(q => new Decimal(q.volume).gte(
+        /*.filter(q => new Decimal(q.volume).gte(
           (closingPair ? closingPair[0].size : config.minSize)
             * floor(config.maxTargetVolumePercent !== undefined
               ? 100 / config.maxTargetVolumePercent
-              : 1))),
+              : 1)))*/,
       "price"
     );
     if(closingPair){
       const isOppositeSide = (o: OrderImpl, q: Quote) =>
-        q.side === (o.side === "Buy" ? "Bid" : "Ask");
+        q.side === (o.side === "buy" ? "Bid" : "Ask");
       const isSameBroker = (o: OrderImpl, q: Quote) => o.broker === q.broker;
       filteredQuotes = filteredQuotes
         .filter(
@@ -64,9 +64,9 @@ export default class SpreadAnalyzer {
     }
     const { ask, bid } = this.getBest(filteredQuotes);
     if(bid === undefined){
-      throw new Error(t`NoBestBidWasFound`);
+      this.logger.warn(t`NoBestBidWasFound`);
     }else if(ask === undefined){
-      throw new Error(t`NoBestAskWasFound`);
+      this.logger.warn(t`NoBestAskWasFound`);
     }
 
     const invertedSpread = bid.price - ask.price;
@@ -91,7 +91,7 @@ export default class SpreadAnalyzer {
       targetProfit,
       profitPercentAgainstNotional,
     };
-    this.logger.debug(`Analysis done. Result: ${JSON.stringify(spreadAnalysisResult)}`);
+    this.logger.debug("Analysis done.");
     return spreadAnalysisResult;
   }
 

@@ -16,7 +16,7 @@ const en = {
   CheckingIfBothLegsAreDoneOrNot: ">>Checking if both legs are done or not...",
   ExpectedProfit: "Expected profit",
   FailedToGetASpreadAnalysisResult:
-    "Failed to get a spread analysis result. Check maxLongPosition and maxShortPosition in the broker configs. %s",
+    "Failed to get a spread analysis result. Check maxLongPosition and maxShortPosition in the broker configs.",
   FoundArbitrageOppotunity: ">>Found arbitrage oppotunity.",
   FoundInvertedQuotes: "Found inverted quotes.",
   LongAllowed: "LongAllowed",
@@ -71,7 +71,7 @@ const ja = {
   CheckingIfBothLegsAreDoneOrNot: ">>約定確認中...",
   ExpectedProfit: "予想収益　　",
   FailedToGetASpreadAnalysisResult:
-    "スプレッド解析結果の取得に失敗しました。取引所設定のmaxLongPosition, maxShortPositionが十分に大きいか確認してください。 %s",
+    "スプレッド解析結果の取得に失敗しました。取引所設定のmaxLongPosition, maxShortPositionが十分に大きいか確認してください。",
   FoundArbitrageOppotunity: ">>裁定機会を発見。",
   FoundInvertedQuotes: "スプレッドの逆転を発見。",
   LongAllowed: "買い試行許可",
