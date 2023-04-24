@@ -1,12 +1,12 @@
 import type { OrderBooksResponse, CashMarginTypeStrategy } from "./types";
-import type { BrokerConfigType } from "../config";
+import type { BrokerConfigType } from "../../config";
 import type {
   Order,
   Execution,
   BrokerAdapter,
   Quote
-} from "../types";
-import type { CashMarginType } from "../types";
+} from "../../types";
+import type { CashMarginType } from "../../types";
 
 import { addMinutes } from "date-fns";
 import "dotenv/config";
@@ -15,8 +15,8 @@ import BrokerApi from "./BrokerApi";
 import CashStrategy from "./CashStrategy";
 import MarginOpenStrategy from "./MarginOpenStrategy";
 import NetOutStrategy from "./NetOutStrategy";
-import { getLogger } from "../logger";
-import { eRound, almostEqual, toExecution, toQuote } from "../util";
+import { getLogger } from "../../logger";
+import { eRound, almostEqual, toExecution, toQuote } from "../../util";
 
 export default class BrokerAdapterImpl implements BrokerAdapter {
   private readonly brokerApi: BrokerApi;
@@ -69,7 +69,7 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
 
   async cancel(order: Order): Promise<void> {
     const orderId = order.brokerOrderId;
-    const reply = await this.brokerApi.cancelOrder(orderId);
+    const reply = await this.brokerApi.cancelOrder();
     if(!reply.success){
       throw new Error(`Cancel ${orderId} failed.`);
     }

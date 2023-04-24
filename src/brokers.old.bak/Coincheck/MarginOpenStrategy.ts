@@ -1,8 +1,8 @@
 import type BrokerApi from "./BrokerApi";
 import type { CashMarginTypeStrategy } from "./types";
-import type { Order } from "../types";
+import type { Order } from "../../types";
 
-import { eRound, sumBy } from "../util";
+import { eRound, sumBy } from "../../util";
 
 
 export default class MarginOpenStrategy implements CashMarginTypeStrategy {
@@ -12,13 +12,7 @@ export default class MarginOpenStrategy implements CashMarginTypeStrategy {
     if(order.cashMarginType !== "MarginOpen"){
       throw new Error();
     }
-    const request = {
-      pair: "btc_jpy",
-      order_type: this.getBrokerOrderType(order),
-      amount: order.size,
-      rate: order.price,
-    };
-    const reply = await this.brokerApi.newOrder(request);
+    const reply = await this.brokerApi.newOrder();
     if(!reply.success){
       throw new Error("Send failed.");
     }

@@ -1,8 +1,8 @@
 import type BrokerApi from "./BrokerApi";
 import type { CashMarginTypeStrategy, NewOrderRequest } from "./types";
-import type { Order } from "../types";
+import type { Order } from "../../types";
 
-import { eRound, almostEqual, sumBy } from "../util";
+import { eRound, almostEqual, sumBy } from "../../util";
 
 
 export default class NetOutStrategy implements CashMarginTypeStrategy {
@@ -12,8 +12,7 @@ export default class NetOutStrategy implements CashMarginTypeStrategy {
     if(order.cashMarginType !== "NetOut"){
       throw new Error();
     }
-    const request = await this.getNetOutRequest(order);
-    const reply = await this.brokerApi.newOrder(request);
+    const reply = await this.brokerApi.newOrder();
     if(!reply.success){
       throw new Error("Send failed.");
     }

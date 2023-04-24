@@ -1,5 +1,4 @@
 import type {
-  SendOrderRequest,
   CancelOrderResponse,
   TradingAccountsResponse,
   CloseAllResponse,
@@ -10,12 +9,9 @@ import * as jwt from "jsonwebtoken";
 import {
   SendOrderResponse,
   OrdersResponse,
-  PriceLevelsResponse,
-  TradingAccount,
-  ClosingTrade,
-  AccountBalance
+  PriceLevelsResponse
 } from "./types";
-import { nonce, safeQueryStringStringify } from "../util";
+import { nonce, safeQueryStringStringify } from "../../util";
 import WebClient from "../webClient";
 
 
@@ -25,9 +21,8 @@ export default class BrokerApi {
 
   constructor(private readonly key: string, private readonly secret: string) {}
 
-  async sendOrder(request: SendOrderRequest): Promise<SendOrderResponse> {
-    const path = "/orders/";
-    return new SendOrderResponse(await this.post<SendOrderResponse, SendOrderRequest>(path, request));
+  async sendOrder(): Promise<SendOrderResponse> {
+    return new SendOrderResponse();
   }
 
   async cancelOrder(id: string): Promise<CancelOrderResponse> {
@@ -35,32 +30,30 @@ export default class BrokerApi {
     return this.put<CancelOrderResponse>(path);
   }
 
-  async getOrders(id: string): Promise<OrdersResponse> {
-    const path = `/orders/${id}`;
-    return new OrdersResponse(await this.get<OrdersResponse>(path));
+  async getOrders(): Promise<OrdersResponse> {
+    return new OrdersResponse();
   }
 
   async getTradingAccounts(): Promise<TradingAccountsResponse> {
     const path = "/trading_accounts";
     const response = await this.get<TradingAccountsResponse>(path);
-    return response.map(x => new TradingAccount(x));
+    return response;
   }
 
   async getAccountBalance(): Promise<AccountBalanceResponse> {
     const path = "/accounts/balance";
     const response = await this.get<AccountBalanceResponse>(path);
-    return response.map(x => new AccountBalance(x));
+    return response;
   }
 
   async getPriceLevels(): Promise<PriceLevelsResponse> {
-    const path = "/products/5/price_levels";
-    return new PriceLevelsResponse(await this.webClient.fetch<PriceLevelsResponse>(path, undefined, false));
+    return new PriceLevelsResponse();
   }
 
   async closeAll(): Promise<CloseAllResponse> {
     const path = "/trades/close_all";
     const response = await this.put<CloseAllResponse>(path);
-    return response.map(x => new ClosingTrade(x));
+    return response;
   }
 
   private async call<R>(path: string, method: string, body: string = ""): Promise<R> {

@@ -1,16 +1,16 @@
 import type { ChildOrdersParam, SendChildOrderRequest, ChildOrder } from "./types";
-import type { BrokerConfigType } from "../config";
+import type { BrokerConfigType } from "../../config";
 import type {
   BrokerAdapter,
   Order,
   Execution,
   Quote
-} from "../types";
+} from "../../types";
 
 import "dotenv/config";
 import BrokerApi from "./BrokerApi";
-import { getLogger } from "../logger";
-import { eRound, toExecution } from "../util";
+import { getLogger } from "../../logger";
+import { eRound, toExecution } from "../../util";
 
 export default class BrokerAdapterImpl implements BrokerAdapter {
   private readonly brokerApi: BrokerApi;
@@ -25,8 +25,7 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
     if(order.broker !== this.broker){
       throw new Error();
     }
-    const param = this.mapOrderToSendChildOrderRequest(order);
-    const reply = await this.brokerApi.sendChildOrder(param);
+    const reply = await this.brokerApi.sendChildOrder();
     order.brokerOrderId = reply.child_order_acceptance_id;
     order.status = "New";
     order.sentTime = new Date();
