@@ -11,7 +11,7 @@ import stripJsonComments from "strip-json-comments";
 
 import { ConfigRoot } from "./type";
 
-const DEVELOPMENT_PHASE = false;
+const DEVELOPMENT_PHASE = true;
 
 export type FormedConfigRootType = Omit<ConfigRootType, "brokers"> & {
   brokers: BrokerConfigType[],
@@ -46,7 +46,7 @@ class ConfigLoader {
   }
   
   load(){
-    const configPath = path.join(process.cwd(), "./config_test.json");
+    const configPath = path.join(process.cwd(), "./config.json");
 
     if(!fs.existsSync(configPath)){
       console.error("There's no configure file.");
@@ -70,7 +70,6 @@ class ConfigLoader {
     
     if(DEVELOPMENT_PHASE && (typeof config !== "object" || !("debug" in config) || !config.debug)){
       console.error("This is still a development phase, and running without debug mode is currently disabled.");
-      console.error("You should use the latest version instead of the current branch.");
       process.exit(1);
     }
     

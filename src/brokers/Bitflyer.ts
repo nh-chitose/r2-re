@@ -1,25 +1,22 @@
 import type { BrokerConfigType } from "../config";
 import type {
-  Order,
-  Execution,
-  BrokerAdapter,
   Quote
 } from "../types";
 
 import ccxt from "ccxt";
-import { addMinutes } from "date-fns";
 import "dotenv/config";
 
+import { getConfig } from "../config/configLoader";
 import { getLogger } from "../logger";
-import { eRound, almostEqual, toExecution, toQuote } from "../util";
+import { toQuote } from "../util";
 
+const { demoMode, symbol } = getConfig();
 let keys: object;
-const logger = getLogger("Coincheck");
 
-if(process.env.COINCHECK_TOKEN && process.env.COINCHECK_SECRET){
+if(process.env.BITFLYER_TOKEN && process.env.BITFLYER_SECRET){
   keys = {
-    apiKey: process.env.COINCHECK_TOKEN,
-    secret: process.env.COINCHECK_SECRET,
+    apiKey: process.env.BITFLYER_TOKEN,
+    secret: process.env.BITFLYER_SECRET,
   };
 }else{
   keys = {};
@@ -34,28 +31,34 @@ async function main(envs: object) {
 export function create(config: BrokerConfigType){
   return new BrokerAdapterImpl(config);
 }
+
 export default class BrokerAdapterImpl /*implements BrokerAdapter*/ {
   readonly broker = "Bitflyer";
+  private readonly logger = getLogger(`${this.broker}Adapter`);
   private readonly api = main(keys);
 
   constructor(private readonly config: BrokerConfigType) {
+    if(Object.keys(keys).length && !demoMode && config.enabled){
+      this.logger.fatal(`${this.broker} is enabled but it doesn't have TOKEN and/or SECRET!`);
+      process.exit(1);
+    }
   }
 
   async fetchQuotes(): Promise<Quote[]> {
-    const response = await (await this.api).fetchOrderBook("BTC/JPY");
+    const response = await (await this.api).fetchOrderBook(symbol);
     return this.mapToQuote(response);
   }
 
   private mapToQuote(orderBooksResponse: any): Quote[] {
     const asks = orderBooksResponse.asks;
-    const mappedAsks = new Array(asks.map((q: any) => toQuote(this.broker, "Ask", q[0], q[1])));
+    const mappedAsks = asks.map((q: any) => toQuote(this.broker, "Ask", q[0], q[1]));
     const bids = orderBooksResponse.bids;
-    const mappedBids = new Array(bids.map((q: any) => toQuote(this.broker, "Bid", q[0], q[1])));
+    const mappedBids = bids.map((q: any) => toQuote(this.broker, "Bid", q[0], q[1]));
     return mappedAsks.concat(mappedBids);
   }
 
   async getBtcPosition(): Promise<number> {
-    const balance = (await (await this.api).fetchBalance()).info;
+    const balance = (await (await this.api).fetchBalance()).info.btc;
     return balance;
   }
 

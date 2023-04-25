@@ -16,7 +16,7 @@ const en = {
   CheckingIfBothLegsAreDoneOrNot: ">>Checking if both legs are done or not...",
   ExpectedProfit: "Expected profit",
   FailedToGetASpreadAnalysisResult:
-    "Failed to get a spread analysis result. Check maxLongPosition and maxShortPosition in the broker configs. %s",
+    "Failed to get a spread analysis result. Check maxLongPosition and maxShortPosition in the broker configs.",
   FoundArbitrageOppotunity: ">>Found arbitrage oppotunity.",
   FoundInvertedQuotes: "Found inverted quotes.",
   LongAllowed: "LongAllowed",
@@ -45,6 +45,7 @@ const en = {
   TargetProfitIsLargerThanMaxProfit: "Targetprofit is larger than max profit.",
   TargetVolume: "Target volume",
   ThisIsDemoModeNotSendingOrders: ">>This is Demo mode. Not sending orders.",
+  ThisIsDemoModeYouHaveDummyBalances: ">>This is Demo mode. You have dummy balances.",
   AnalyzingQuotes: "Analyzing quotes...",
   WaitingForPositionService: "Waiting for Position Service...",
   FilledSummary: ">>Filled: %s %s %d %s filled at %s",
@@ -71,7 +72,7 @@ const ja = {
   CheckingIfBothLegsAreDoneOrNot: ">>約定確認中...",
   ExpectedProfit: "予想収益　　",
   FailedToGetASpreadAnalysisResult:
-    "スプレッド解析結果の取得に失敗しました。取引所設定のmaxLongPosition, maxShortPositionが十分に大きいか確認してください。 %s",
+    "スプレッド解析結果の取得に失敗しました。取引所設定のmaxLongPosition, maxShortPositionが十分に大きいか確認してください。",
   FoundArbitrageOppotunity: ">>裁定機会を発見。",
   FoundInvertedQuotes: "スプレッドの逆転を発見。",
   LongAllowed: "買い試行許可",
@@ -101,6 +102,7 @@ const ja = {
   TargetProfitIsLargerThanMaxProfit: "目標収益 > 最大収益設定",
   TargetVolume: "目標数量　　",
   ThisIsDemoModeNotSendingOrders: ">>現在デモモードです。オーダーは送信しません。",
+  ThisIsDemoModeYouHaveDummyBalances: ">>現在デモモードです。残高はダミーです。",
   AnalyzingQuotes: "板情報解析中...",
   WaitingForPositionService: "ポジションサービスの待機中...",
   FilledSummary: ">>約定済み: %s %s %d %s 約定価格 %s",

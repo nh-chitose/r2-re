@@ -48,7 +48,7 @@ export default class SingleLegHandler {
   private async reverseLeg(orders: OrderPair, options: any): Promise<OrderImpl[]> {
     const smallLeg = orders[0].filledSize <= orders[1].filledSize ? orders[0] : orders[1];
     const largeLeg = orders[0].filledSize <= orders[1].filledSize ? orders[1] : orders[0];
-    const sign = largeLeg.side === "Buy" ? -1 : 1;
+    const sign = largeLeg.side === "buy" ? -1 : 1;
     const price = round(largeLeg.price * (1 + sign * options.limitMovePercent / 100));
     const size = floor(largeLeg.filledSize - smallLeg.filledSize, LOT_MIN_DECIMAL_PLACE);
     const { baseCcy } = splitSymbol(this.symbol);
@@ -56,11 +56,11 @@ export default class SingleLegHandler {
     const reversalOrder = new OrderImpl({
       symbol: this.symbol,
       broker: largeLeg.broker,
-      side: largeLeg.side === "Buy" ? "Sell" : "Buy",
+      side: largeLeg.side === "buy" ? "sell" : "buy",
       size,
       price,
       cashMarginType: largeLeg.cashMarginType,
-      type: "Limit",
+      type: "limit",
       leverageLevel: largeLeg.leverageLevel,
     });
     await this.sendOrderWithTtl(reversalOrder, options.ttl);
@@ -70,7 +70,7 @@ export default class SingleLegHandler {
   private async proceedLeg(orders: OrderPair, options: any): Promise<OrderImpl[]> {
     const smallLeg = orders[0].filledSize <= orders[1].filledSize ? orders[0] : orders[1];
     const largeLeg = orders[0].filledSize <= orders[1].filledSize ? orders[1] : orders[0];
-    const sign = smallLeg.side === "Buy" ? 1 : -1;
+    const sign = smallLeg.side === "buy" ? 1 : -1;
     const price = round(smallLeg.price * (1 + sign * options.limitMovePercent / 100));
     const size = floor(smallLeg.pendingSize - largeLeg.pendingSize, LOT_MIN_DECIMAL_PLACE);
     const { baseCcy } = splitSymbol(this.symbol);
@@ -82,7 +82,7 @@ export default class SingleLegHandler {
       size,
       price,
       cashMarginType: smallLeg.cashMarginType,
-      type: "Limit",
+      type: "limit",
       leverageLevel: smallLeg.leverageLevel,
     });
     await this.sendOrderWithTtl(proceedOrder, options.ttl);

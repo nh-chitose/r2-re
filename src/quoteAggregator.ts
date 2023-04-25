@@ -54,8 +54,7 @@ export default class QuoteAggregator extends AwaitableEventEmitter {
       const fetchTasks = enabledBrokers.map(x => this.brokerAdapterRouter.fetchQuotes(x));
       const quotesMap = await Promise.all(fetchTasks);
       const allQuotes = quotesMap.flatMap(d => d);
-      //await this.setQuotes(this.fold(allQuotes, this.configStore.config.priceMergeSize));
-      await this.setQuotes(allQuotes);
+      await this.setQuotes(this.fold(allQuotes, this.configStore.config.priceMergeSize));
       this.logger.debug("Aggregated.");
     } catch(ex){
       this.logger.error(ex.message);

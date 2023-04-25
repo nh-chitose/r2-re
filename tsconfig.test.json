@@ -5,7 +5,6 @@
   },
   "include": [
     "./test/**/*.ts",
-    "./webui/**/*.ts",
     "./tools/**/*.ts"
   ],
   "exclude": [

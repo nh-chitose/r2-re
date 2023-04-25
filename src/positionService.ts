@@ -54,6 +54,9 @@ export default class PositionService extends EventEmitter {
       + `${t`ShortAllowed`}: ${isOk(brokerPosition.shortAllowed)}`;
 
     this.logger.info(`${hr(21)}POSITION${hr(21)}`);
+    if(this.configStore.config.demoMode){
+      this.logger.info(t`ThisIsDemoModeYouHaveDummyBalances`);
+    }
     this.logger.info(`Net Exposure: ${round(this.netExposure, 3)} ${baseCcy}`);
     Object.values(this.positionMap).forEach((position) => {
       const stability = this.brokerStabilityTracker.stability(position.broker);
@@ -98,7 +101,7 @@ export default class PositionService extends EventEmitter {
 
   private async getBrokerPosition(brokerConfig: BrokerConfigType, minSize: number): Promise<BrokerPosition> {
     const { baseCcy } = splitSymbol(this.configStore.config.symbol);
-    const positions = await this.brokerAdapterRouter.getPositions(brokerConfig.broker);
+    const positions = await this.brokerAdapterRouter.getBtcPositions(brokerConfig.broker);
     const baseCcyPosition = positions.get(baseCcy);
     if(baseCcyPosition === undefined){
       throw new Error(`Unable to find base ccy position in ${brokerConfig.broker}. ${JSON.stringify([...positions])}`);

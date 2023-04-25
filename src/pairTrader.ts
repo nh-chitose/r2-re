@@ -42,7 +42,7 @@ export default class PairTrader extends EventEmitter {
 
   async trade(spreadAnalysisResult: SpreadAnalysisResult, closable: boolean): Promise<void> {
     const { bid, ask, targetVolume } = spreadAnalysisResult;
-    const sendTasks = [ask, bid].map(q => this.sendOrder(q, targetVolume, "Limit"));
+    const sendTasks = [ask, bid].map(q => this.sendOrder(q, targetVolume, "limit"));
     const orders = await Promise.all(sendTasks);
     this.status = "Sent";
     await this.checkOrderState(orders, closable);
@@ -86,7 +86,7 @@ export default class PairTrader extends EventEmitter {
         await Promise.all(cancelTasks);
         if(
           orders.some(o => !o.filled)
-          && sumBy(orders, o => o.filledSize * (o.side === "Buy" ? -1 : 1)) !== 0
+          && sumBy(orders, o => o.filledSize * (o.side === "buy" ? -1 : 1)) !== 0
         ){
           const subOrders = await this.singleLegHandler.handle(orders as OrderPair, closable);
           if(subOrders.length !== 0 && subOrders.every(o => o.filled)){
@@ -103,7 +103,7 @@ export default class PairTrader extends EventEmitter {
     const brokerConfig = findBrokerConfig(quote.broker);
     const { config } = this.configStore;
     const { cashMarginType, leverageLevel } = brokerConfig;
-    const orderSide = quote.side === "Ask" ? "Buy" : "Sell";
+    const orderSide = quote.side === "Ask" ? "buy" : "sell";
     const orderPrice
      = quote.side === "Ask" && config.acceptablePriceRange !== undefined
        ? round(quote.price * (1 + config.acceptablePriceRange / 100))

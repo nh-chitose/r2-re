@@ -71,7 +71,7 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
     order.status = "Canceled";
   }
 
-  async getPosition(): Promise<number> {
+  async getBtcPosition(): Promise<number> {
     const balanceResponse = await this.brokerApi.getBalance();
     const btcBalance = balanceResponse.find(b => b.currency_code === "BTC");
     if(!btcBalance){

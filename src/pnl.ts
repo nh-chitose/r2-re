@@ -12,6 +12,6 @@ export function calcProfit(orders: OrderImpl[]): { profit: number, commission: n
     const brokerConfig = findBrokerConfig(o.broker);
     return calcCommission(o.averageFilledPrice, o.filledSize, brokerConfig.commissionPercent);
   });
-  const profit = sumBy(orders, o => (o.side === "Sell" ? 1 : -1) * o.filledNotional) - commission;
+  const profit = sumBy(orders, o => (o.side === "sell" ? 1 : -1) * o.filledNotional) - commission;
   return { profit, commission };
 }

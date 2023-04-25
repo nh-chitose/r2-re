@@ -30,7 +30,7 @@ export default class AppRoot {
       this.maintenanceTick();
       setInterval(this.maintenanceTick.bind(this), 1 * 60 * 1000);
     }, 10 * 1000);
-    this.logger.info("Interval jobs set up successfully");
+    this.logger.debug("Interval jobs set up successfully");
   }
 
   async start(): Promise<void> {

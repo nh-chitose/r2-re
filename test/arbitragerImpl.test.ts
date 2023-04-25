@@ -28,7 +28,6 @@ let quoteAggregator: any,
   positionService: any,
   baRouter: any,
   spreadAnalyzer: any,
-  // @ts-ignore
   quotes: any,
   limitCheckerFactory: any;
 
@@ -409,7 +408,7 @@ describe("Arbitrager", function(){
 
   it("Send and both orders filled", async () => {
     baRouter.refresh = spy((order: any) => {
-      order.status = "Filled";
+      order.status = "executed";
     });
     config.maxRetryCount = 3;
     spreadAnalyzer.analyze.mockImplementation(() => {
@@ -444,10 +443,10 @@ describe("Arbitrager", function(){
     const localChronoDB = new ChronoDB(`${__dirname}/datastore/diff_size`);
     const localActivePairStore = getActivePairStore(localChronoDB);
     baRouter.refresh = spy((order: Order) => {
-      order.status = "Filled";
+      order.status = "executed";
     });
     baRouter.send = spy((order: Order) => {
-      if(order.side === "Sell"){
+      if(order.side === "sell"){
         order.size += 0.0015;
       }
     });
@@ -486,8 +485,8 @@ describe("Arbitrager", function(){
 
   it("Send and only buy order filled", async () => {
     baRouter.refresh = (order: Order) => {
-      if(order.side === "Buy"){
-        order.status = "Filled";
+      if(order.side === "buy"){
+        order.status = "executed";
       }
     };
     config.maxRetryCount = 3;
@@ -518,8 +517,8 @@ describe("Arbitrager", function(){
 
   it("Send and only sell order filled", async () => {
     baRouter.refresh = spy((order: Order) => {
-      if(order.side === "Sell"){
-        order.status = "Filled";
+      if(order.side === "sell"){
+        order.status = "executed";
       }
     });
     config.maxRetryCount = 3;
@@ -555,8 +554,8 @@ describe("Arbitrager", function(){
     config.onSingleLeg = { action: "Reverse", actionOnExit: "Reverse", options: { limitMovePercent: 10, ttl: 3000 } };
     baRouter.refresh = spy(async (order: Order) => {
       order.filledSize = 0;
-      if(order.side === "Sell"){
-        order.status = "Filled";
+      if(order.side === "sell"){
+        order.status = "executed";
         order.filledSize = 1;
       }
     });
@@ -593,8 +592,8 @@ describe("Arbitrager", function(){
     config.onSingleLeg = { action: "Reverse", actionOnExit: "Reverse", options: { limitMovePercent: 10, ttl: 3000 } };
     baRouter.refresh = spy(async (order: Order) => {
       order.filledSize = 0.3;
-      if(order.side === "Sell"){
-        order.status = "Filled";
+      if(order.side === "sell"){
+        order.status = "executed";
         order.filledSize = 1;
       }
     });
@@ -631,7 +630,7 @@ describe("Arbitrager", function(){
     config.onSingleLeg = { action: "Reverse", actionOnExit: "Reverse", options: { limitMovePercent: 10, ttl: 3000 } };
     baRouter.refresh = spy(async (order: Order) => {
       order.filledSize = 0.3;
-      if(order.side === "Sell"){
+      if(order.side === "sell"){
         order.filledSize = 0;
       }
     });
@@ -668,8 +667,8 @@ describe("Arbitrager", function(){
     config.onSingleLeg = { action: "Reverse", actionOnExit: "Reverse", options: { limitMovePercent: 10, ttl: 3000 } };
     baRouter.refresh = spy(async (order: Order) => {
       order.filledSize = 0;
-      if(order.side === "Buy"){
-        order.status = "Filled";
+      if(order.side === "buy"){
+        order.status = "executed";
         order.filledSize = 1;
       }
     });
@@ -706,8 +705,8 @@ describe("Arbitrager", function(){
     config.onSingleLeg = { action: "Reverse", actionOnExit: "Reverse", options: { limitMovePercent: 10, ttl: 3000 } };
     baRouter.refresh = spy(async (order: Order) => {
       order.filledSize = 0.3;
-      if(order.side === "Buy"){
-        order.status = "Filled";
+      if(order.side === "buy"){
+        order.status = "executed";
         order.filledSize = 1;
       }
     });
@@ -744,7 +743,7 @@ describe("Arbitrager", function(){
     config.onSingleLeg = { action: "Reverse", actionOnExit: "Reverse", options: { limitMovePercent: 10, ttl: 3000 } };
     baRouter.refresh = spy(async (order: Order) => {
       order.filledSize = 0.3;
-      if(order.side === "Buy"){
+      if(order.side === "buy"){
         order.filledSize = 0;
       }
     });
@@ -781,7 +780,7 @@ describe("Arbitrager", function(){
     config.onSingleLeg = { action: "Reverse", actionOnExit: "Reverse", options: { limitMovePercent: 10, ttl: 3000 } };
     baRouter.refresh = spy(async (order: Order) => {
       order.filledSize = 0.7;
-      if(order.side === "Buy"){
+      if(order.side === "buy"){
         order.filledSize = 0.2;
       }
     });
@@ -818,7 +817,7 @@ describe("Arbitrager", function(){
     config.onSingleLeg = { action: "Reverse", actionOnExit: "Reverse", options: { limitMovePercent: 10, ttl: 3000 } };
     baRouter.refresh = spy(async (order: Order) => {
       order.filledSize = 0.8;
-      if(order.side === "Buy"){
+      if(order.side === "buy"){
         order.filledSize = 0.8;
       }
     });
@@ -855,7 +854,7 @@ describe("Arbitrager", function(){
     config.onSingleLeg = { action: "Reverse", actionOnExit: "Reverse", options: { limitMovePercent: 10, ttl: 3000 } };
     baRouter.refresh = spy(async (order: Order) => {
       order.filledSize = 0;
-      if(order.side === "Buy"){
+      if(order.side === "buy"){
         order.filledSize = 0;
       }
     });
@@ -892,8 +891,8 @@ describe("Arbitrager", function(){
     config.onSingleLeg = { action: "Reverse", actionOnExit: "Reverse", options: { limitMovePercent: 10, ttl: 3000 } };
     const fillBuy = async (order: Order) => {
       order.filledSize = 0;
-      if(order.side === "Buy"){
-        order.status = "Filled";
+      if(order.side === "buy"){
+        order.status = "executed";
         order.filledSize = 1;
       }
     };
@@ -941,8 +940,8 @@ describe("Arbitrager", function(){
     config.onSingleLeg = { action: "Reverse", actionOnExit: "Reverse", options: { limitMovePercent: 10, ttl: 3000 } };
     baRouter.refresh = spy(async (order: Order) => {
       order.filledSize = 0;
-      if(order.side === "Buy"){
-        order.status = "Filled";
+      if(order.side === "buy"){
+        order.status = "executed";
         order.filledSize = 1;
       }
     });
@@ -983,8 +982,8 @@ describe("Arbitrager", function(){
     config.onSingleLeg = { action: "Proceed", actionOnExit: "Proceed", options: { limitMovePercent: 10, ttl: 3000 } };
     baRouter.refresh = spy(async (order: Order) => {
       order.filledSize = 0;
-      if(order.side === "Sell"){
-        order.status = "Filled";
+      if(order.side === "sell"){
+        order.status = "executed";
         order.filledSize = 1;
       }
     });
@@ -1021,8 +1020,8 @@ describe("Arbitrager", function(){
     config.onSingleLeg = { action: "Proceed", actionOnExit: "Proceed", options: { limitMovePercent: 10, ttl: 3000 } };
     baRouter.refresh = spy(async (order: Order) => {
       order.filledSize = 0;
-      if(order.side === "Buy"){
-        order.status = "Filled";
+      if(order.side === "buy"){
+        order.status = "executed";
         order.filledSize = 1;
       }
     });
@@ -1059,8 +1058,8 @@ describe("Arbitrager", function(){
     config.onSingleLeg = { action: "Proceed", actionOnExit: "Proceed", options: { limitMovePercent: 10, ttl: 3000 } };
     baRouter.refresh = spy(async (order: Order) => {
       order.filledSize = 0.3;
-      if(order.side === "Buy"){
-        order.status = "Filled";
+      if(order.side === "buy"){
+        order.status = "executed";
         order.filledSize = 1;
       }
     });
@@ -1097,7 +1096,7 @@ describe("Arbitrager", function(){
     config.onSingleLeg = { action: "Proceed", actionOnExit: "Proceed", options: { limitMovePercent: 10, ttl: 3000 } };
     baRouter.refresh = spy(async (order: Order) => {
       order.filledSize = 0.3;
-      if(order.side === "Buy"){
+      if(order.side === "buy"){
         order.filledSize = 0;
       }
     });
@@ -1134,7 +1133,7 @@ describe("Arbitrager", function(){
     config.onSingleLeg = { action: "Proceed", actionOnExit: "Proceed", options: { limitMovePercent: 10, ttl: 3000 } };
     baRouter.refresh = spy(async (order: Order) => {
       order.filledSize = 0.7;
-      if(order.side === "Buy"){
+      if(order.side === "buy"){
         order.filledSize = 0.2;
       }
     });
@@ -1171,7 +1170,7 @@ describe("Arbitrager", function(){
     config.onSingleLeg = { action: "Proceed", actionOnExit: "Proceed", options: { limitMovePercent: 10, ttl: 3000 } };
     baRouter.refresh = spy(async (order: Order) => {
       order.filledSize = 0.8;
-      if(order.side === "Buy"){
+      if(order.side === "buy"){
         order.filledSize = 0.8;
       }
     });
@@ -1208,7 +1207,7 @@ describe("Arbitrager", function(){
     config.onSingleLeg = { action: "Proceed", actionOnExit: "Proceed", options: { limitMovePercent: 10, ttl: 3000 } };
     baRouter.refresh = spy(async (order: Order) => {
       order.filledSize = 0;
-      if(order.side === "Buy"){
+      if(order.side === "buy"){
         order.filledSize = 0;
       }
     });
@@ -1245,8 +1244,8 @@ describe("Arbitrager", function(){
     config.onSingleLeg = { action: "Cancel", actionOnExit: "Cancel", options: { limitMovePercent: 10, ttl: 3000 } };
     baRouter.refresh = spy(async (order: Order) => {
       order.filledSize = 0;
-      if(order.side === "Buy"){
-        order.status = "Filled";
+      if(order.side === "buy"){
+        order.status = "executed";
         order.filledSize = 1;
       }
     });
@@ -1398,7 +1397,7 @@ describe("Arbitrager", function(){
   });
 
   it("Send and filled", async () => {
-    baRouter.refresh.mockImplementation((order: Order) => order.status = "Filled");
+    baRouter.refresh.mockImplementation((order: Order) => order.status = "executed");
     config.maxRetryCount = 3;
     spreadAnalyzer.analyze.mockImplementation(() => {
       return {
@@ -1426,7 +1425,7 @@ describe("Arbitrager", function(){
   });
 
   it("Send and filled with commission", async () => {
-    baRouter.refresh.mockImplementation((order: Order) => order.status = "Filled");
+    baRouter.refresh.mockImplementation((order: Order) => order.status = "executed");
     config.maxRetryCount = 3;
     config.brokers[0].commissionPercent = 0.1;
     config.brokers[1].commissionPercent = 0.2;
@@ -1463,7 +1462,7 @@ describe("Arbitrager", function(){
       toQuote("Coincheck", "Ask", 500, 1),
       toQuote("Coincheck", "Bid", 400, 1),
     ];
-    baRouter.refresh.mockImplementation((order: Order) => order.status = "Filled");
+    baRouter.refresh.mockImplementation((order: Order) => order.status = "executed");
     config.maxRetryCount = 3;
     config.minTargetProfit = 50;
     config.minExitTargetProfit = -1000;
@@ -1499,7 +1498,7 @@ describe("Arbitrager", function(){
       toQuote("Quoine", "Bid", 601, 4),
       toQuote("Coincheck", "Ask", 501, 1),
     ];
-    baRouter.refresh.mockImplementation((order: Order) => order.status = "Filled");
+    baRouter.refresh.mockImplementation((order: Order) => order.status = "executed");
     config.maxRetryCount = 3;
     config.minTargetProfit = 50;
     config.minExitTargetProfit = -1000;
@@ -1543,7 +1542,7 @@ describe("Arbitrager", function(){
       toQuote("Coincheck", "Ask", 500, 1),
       toQuote("Coincheck", "Bid", 400, 1),
     ];
-    baRouter.refresh.mockImplementation((order: Order) => order.status = "Filled");
+    baRouter.refresh.mockImplementation((order: Order) => order.status = "executed");
     config.maxRetryCount = 3;
     config.minTargetProfit = 50;
     config.minExitTargetProfitPercent = -80;
@@ -1575,7 +1574,7 @@ describe("Arbitrager", function(){
       toQuote("Coincheck", "Ask", 500, 1),
       toQuote("Coincheck", "Bid", 400, 1),
     ];
-    baRouter.refresh.mockImplementation((order: Order) => order.status = "Filled");
+    baRouter.refresh.mockImplementation((order: Order) => order.status = "executed");
     config.maxRetryCount = 3;
     config.minTargetProfit = 50;
     config.minExitTargetProfitPercent = -20;
@@ -1607,7 +1606,7 @@ describe("Arbitrager", function(){
       toQuote("Coincheck", "Ask", 500, 1),
       toQuote("Coincheck", "Bid", 400, 1),
     ];
-    baRouter.refresh.mockImplementation((order: Order) => order.status = "Filled");
+    baRouter.refresh.mockImplementation((order: Order) => order.status = "executed");
     config.maxRetryCount = 3;
     config.minTargetProfit = 50;
     config.minExitTargetProfit = -200;
@@ -1652,7 +1651,7 @@ describe("Arbitrager", function(){
       toQuote("Coincheck", "Ask", 500, 1),
       toQuote("Coincheck", "Bid", 400, 1),
     ];
-    baRouter.refresh.mockImplementation((order: Order) => order.status = "Filled");
+    baRouter.refresh.mockImplementation((order: Order) => order.status = "executed");
     config.maxRetryCount = 3;
     config.minTargetProfit = 50;
     config.minExitTargetProfit = -1000;
@@ -1684,7 +1683,7 @@ describe("Arbitrager", function(){
       toQuote("Coincheck", "Ask", 500, 1),
       toQuote("Coincheck", "Bid", 400, 1),
     ];
-    baRouter.refresh.mockImplementation((order: Order) => order.status = "Filled");
+    baRouter.refresh.mockImplementation((order: Order) => order.status = "executed");
     config.maxRetryCount = 3;
     config.minTargetProfit = 50;
     config.minExitTargetProfit = -1000;
@@ -1711,7 +1710,7 @@ describe("Arbitrager", function(){
 
   it("Not close filled orders with maxTargetVolumePercent", async () => {
     const originalRefresh = baRouter.refresh;
-    baRouter.refresh = spy((order: Order) => order.status = "Filled");
+    baRouter.refresh = spy((order: Order) => order.status = "executed");
     config.maxRetryCount = 3;
     config.minTargetProfit = 50;
     config.minExitTargetProfit = -1000;
@@ -1769,7 +1768,7 @@ describe("Arbitrager", function(){
       toQuote("Coincheck", "Bid", 400, 1),
     ];
     baRouter.refresh.mockImplementation((order: Order) => {
-      order.status = "Filled";
+      order.status = "executed";
       order.filledSize = order.size;
       order.executions = [{ price: order.price, size: order.size } as Execution];
     });
@@ -1805,7 +1804,7 @@ describe("Arbitrager", function(){
       toQuote("Coincheck", "Bid", 400, 1),
     ];
     baRouter.refresh.mockImplementation((order: Order) => {
-      order.status = "Filled";
+      order.status = "executed";
       order.filledSize = order.size;
       order.executions = [{ price: order.price, size: order.size } as Execution];
     });
@@ -1841,7 +1840,7 @@ describe("Arbitrager", function(){
       toQuote("Coincheck", "Bid", 400, 1),
     ];
     baRouter.refresh.mockImplementation((order: Order) => {
-      order.status = "Filled";
+      order.status = "executed";
       order.filledSize = order.size;
       order.executions = [{ price: order.price, size: order.size } as Execution];
     });

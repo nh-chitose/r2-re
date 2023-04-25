@@ -8,7 +8,6 @@ import type {
   SpreadStat
 } from "./types";
 
-
 import Decimal from "decimal.js";
 import { injectable, inject } from "inversify";
 
@@ -20,6 +19,7 @@ import { calcCommission } from "./pnl";
 import symbols from "./symbols";
 import { ConfigStore } from "./types";
 import { min, floor, round, mean, sumBy, sortArrayBy, groupBy } from "./util";
+
 
 @injectable()
 export default class SpreadAnalyzer {
@@ -39,7 +39,6 @@ export default class SpreadAnalyzer {
     if(Object.keys(positionMap || {}).length === 0){
       throw new Error("Position map is empty.");
     }
-    console.log(quotes); /////////////////////////////ここ
     let filteredQuotes = sortArrayBy(
       quotes
         .filter(q => this.isAllowedByCurrentPosition(q, positionMap[q.broker]))
@@ -52,7 +51,7 @@ export default class SpreadAnalyzer {
     );
     if(closingPair){
       const isOppositeSide = (o: OrderImpl, q: Quote) =>
-        q.side === (o.side === "Buy" ? "Bid" : "Ask");
+        q.side === (o.side === "buy" ? "Bid" : "Ask");
       const isSameBroker = (o: OrderImpl, q: Quote) => o.broker === q.broker;
       filteredQuotes = filteredQuotes
         .filter(
@@ -64,9 +63,9 @@ export default class SpreadAnalyzer {
     }
     const { ask, bid } = this.getBest(filteredQuotes);
     if(bid === undefined){
-      throw new Error(t`NoBestBidWasFound`);
+      this.logger.warn(t`NoBestBidWasFound`);
     }else if(ask === undefined){
-      throw new Error(t`NoBestAskWasFound`);
+      this.logger.warn(t`NoBestAskWasFound`);
     }
 
     const invertedSpread = bid.price - ask.price;
@@ -91,7 +90,7 @@ export default class SpreadAnalyzer {
       targetProfit,
       profitPercentAgainstNotional,
     };
-    this.logger.debug(`Analysis done. Result: ${JSON.stringify(spreadAnalysisResult)}`);
+    this.logger.debug("Analysis done.");
     return spreadAnalysisResult;
   }
 

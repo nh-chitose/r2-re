@@ -22,12 +22,12 @@ describe("ActivePairLevelStore", function(){
   });
 
   it("put, get, getAll", async () => {
-    const buyLeg = createOrder("Dummy1" as Broker, "Buy", 0.1, 100, "Cash", "Limit", 10);
+    const buyLeg = createOrder("Dummy1" as Broker, "buy", 0.1, 100, "Cash", "limit", 10);
     buyLeg.filledSize = 0.1;
-    buyLeg.status = "Filled";
-    const sellLeg = createOrder("Dummy2" as Broker, "Sell", 0.1, 110, "Cash", "Limit", 10);
+    buyLeg.status = "executed";
+    const sellLeg = createOrder("Dummy2" as Broker, "sell", 0.1, 110, "Cash", "limit", 10);
     sellLeg.filledSize = 0.1;
-    sellLeg.status = "Filled";
+    sellLeg.status = "executed";
     const pair: OrderPair = [buyLeg, sellLeg];
     const key = await store.put(pair);
     const result = await store.get(key);
@@ -38,12 +38,12 @@ describe("ActivePairLevelStore", function(){
   });
 
   it("del", async () => {
-    const buyLeg = createOrder("Dummy1" as Broker, "Buy", 0.1, 100, "Cash", "Limit", 10);
+    const buyLeg = createOrder("Dummy1" as Broker, "buy", 0.1, 100, "Cash", "limit", 10);
     buyLeg.filledSize = 0.1;
-    buyLeg.status = "Filled";
-    const sellLeg = createOrder("Dummy2" as Broker, "Sell", 0.1, 110, "Cash", "Limit", 10);
+    buyLeg.status = "executed";
+    const sellLeg = createOrder("Dummy2" as Broker, "sell", 0.1, 110, "Cash", "limit", 10);
     sellLeg.filledSize = 0.1;
-    sellLeg.status = "Filled";
+    sellLeg.status = "executed";
     const pair: OrderPair = [buyLeg, sellLeg];
     const key = await store.put(pair);
     const result = await store.get(key);

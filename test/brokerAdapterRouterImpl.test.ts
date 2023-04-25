@@ -43,7 +43,7 @@ const baRouter = new BrokerAdapterRouter(brokerAdapters as any, bst, { config } 
 
 describe("BrokerAdapterRouter", () => {
   it("send", async () => {
-    const order = createOrder("Bitflyer", "Buy", 0.001, 500000, "Cash", "Limit", 0);
+    const order = createOrder("Bitflyer", "buy", 0.001, 500000, "Cash", "limit", 0);
     await baRouter.send(order);
     expect(baBitflyer.send).to.be.called.exactly(1);
     expect(baQuoine.send).to.be.called.exactly(0);
@@ -56,20 +56,20 @@ describe("BrokerAdapterRouter", () => {
   });
 
   it("cancel", async () => {
-    const order = createOrder("Bitflyer", "Buy", 0.001, 500000, "Cash", "Limit", 0);
+    const order = createOrder("Bitflyer", "buy", 0.001, 500000, "Cash", "limit", 0);
     await baRouter.cancel(order);
     expect(baBitflyer.cancel).to.be.called.exactly(1);
     expect(baQuoine.cancel).to.be.called.exactly(0);
   });
 
   it("getBtcPosition", async () => {
-    await baRouter.getPositions("Quoine");
+    await baRouter.getBtcPositions("Quoine");
     expect(baBitflyer.getBtcPosition).to.be.called.exactly(0);
     expect(baQuoine.getBtcPosition).to.be.called.exactly(1);
   });
 
   it("refresh", async () => {
-    const order = createOrder("Quoine", "Buy", 0.001, 500000, "Cash", "Limit", 0);
+    const order = createOrder("Quoine", "buy", 0.001, 500000, "Cash", "limit", 0);
     await baRouter.refresh(order);
     expect(baBitflyer.refresh).to.be.called.exactly(0);
     expect(baQuoine.refresh).to.be.called.exactly(1);
@@ -144,7 +144,7 @@ describe("BrokerAdapterRouter", () => {
     const brokerAdapters = [baBitflyer];
     const baRouter = new BrokerAdapterRouter(brokerAdapters as any, bst, { config } as any, orderService as any);
     try{
-      await baRouter.getPositions("Bitflyer");
+      await baRouter.getBtcPositions("Bitflyer");
     } catch(ex){
       expect(ex.message).to.equal("dummy");
       return;
@@ -161,7 +161,7 @@ describe("BrokerAdapterRouter", () => {
     const conf = Object.assign({}, config, { symbol: "XXX/YYY" });
     const baRouter = new BrokerAdapterRouter(brokerAdapters as any, bst, { config: conf } as any, orderService as any);
     try{
-      await baRouter.getPositions("Bitflyer");
+      await baRouter.getBtcPositions("Bitflyer");
     } catch(ex){
       expect(ex.message).to.equal("Unable to find a method to get positions.");
       return;
@@ -178,7 +178,7 @@ describe("BrokerAdapterRouter", () => {
     const brokerAdapters = [baBitflyer];
     const conf = Object.assign({}, config, { symbol: "XXX/YYY" });
     const baRouter = new BrokerAdapterRouter(brokerAdapters as any, bst, { config: conf } as any, orderService as any);
-    await baRouter.getPositions("Bitflyer");
+    await baRouter.getBtcPositions("Bitflyer");
     expect(baBitflyer.getPositions).to.be.called();
   });
 });

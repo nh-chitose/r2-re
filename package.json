@@ -1,16 +1,16 @@
 {
   "name": "r2-re",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Bitcoin arbitrarger powered by Node.js + TypeScript",
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=16.6.0"
   },
   "license": "MIT",
   "scripts": {
     "build": "rimraf dist/ && tsc",
     "onlystart": "node ./dist",
     "start": "npm run build && npm run onlystart",
-    "test": "mocha --exit -- -r ts-node/register -r ./test/importSpy.ts ./test/**/*.test.ts",
+    "test": "mocha --exit -- -r ts-node/register -r ./test/importSpy.ts ./test/**/*.test.ts --exclude ./test/brokers.old.bak/**/*.ts",
     "lint": "eslint ./src/**/*.ts",
     "testlint": "eslint ./test/**/*.test.ts",
     "cleanup": "rimraf dist/",

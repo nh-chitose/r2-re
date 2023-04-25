@@ -71,8 +71,7 @@ export default class OppotunitySearcher extends EventEmitter {
       return { found: true, spreadAnalysisResult, closable };
     } catch(ex){
       this.status = "Spread analysis failed";
-      this.logger.warn(t`FailedToGetASpreadAnalysisResult`, ex.message);
-      this.logger.debug(ex.stack);
+      this.logger.warn(t`FailedToGetASpreadAnalysisResult`);
       return { found: false };
     }
   }
@@ -120,8 +119,8 @@ export default class OppotunitySearcher extends EventEmitter {
 
   private getPairSummary(pair: OrderPair, exitAnalysisResult?: SpreadAnalysisResult): PairSummary {
     const entryProfit = calcProfit(pair).profit;
-    const buyLeg = pair.find(o => o.side === "Buy");
-    const sellLeg = pair.find(o => o.side === "Sell");
+    const buyLeg = pair.find(o => o.side === "buy");
+    const sellLeg = pair.find(o => o.side === "sell");
     const midNotional = mean([buyLeg.averageFilledPrice, sellLeg.averageFilledPrice]) * buyLeg.filledSize;
     const entryProfitRatio = round(entryProfit / midNotional * 100, LOT_MIN_DECIMAL_PLACE);
     let currentExitCost;
@@ -166,8 +165,7 @@ export default class OppotunitySearcher extends EventEmitter {
     this.logger.info("%s: %s", padEnd(t`Spread`, columnWidth), -result.invertedSpread);
     this.logger.info("%s: %s", padEnd(t`AvailableVolume`, columnWidth), result.availableVolume);
     this.logger.info("%s: %s", padEnd(t`TargetVolume`, columnWidth), result.targetVolume);
-    this.logger.info(
-      "%s: %s (%s%%)",
+    this.logger.info("%s: %s (%s%%)",
       padEnd(t`ExpectedProfit`, columnWidth),
       result.targetProfit,
       result.profitPercentAgainstNotional

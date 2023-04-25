@@ -23,7 +23,7 @@ describe("HistoricalOrderStore", function(){
   });
 
   it("put/get", async () => {
-    const order = createOrder("Dummy1", "Buy", 0.001, 1000000, "Cash", "Limit", 1);
+    const order = createOrder("Dummy1", "buy", 0.001, 1000000, "Cash", "limit", 1);
     const key = await store.put(order);
     const result = await store.get(key);
     expect(result.creationTime).to.equal(order.creationTime);
@@ -33,8 +33,8 @@ describe("HistoricalOrderStore", function(){
 
   it("put twice, getAll, del", async () => {
     await store.delAll();
-    const order1 = createOrder("Dummy1", "Buy", 0.001, 1000000, "Cash", "Limit", 1);
-    const order2 = createOrder("Dummy1", "Buy", 0.001, 1000000, "Cash", "Limit", 1);
+    const order1 = createOrder("Dummy1", "buy", 0.001, 1000000, "Cash", "limit", 1);
+    const order2 = createOrder("Dummy1", "buy", 0.001, 1000000, "Cash", "limit", 1);
     const key1 = await store.put(order1);
     const key2 = await store.put(order2);
     const result = await store.getAll();

@@ -36,31 +36,26 @@ export interface Order {
   executions: Execution[];
 }
 
-export type OrderSide = "Buy" | "Sell";
+export type OrderSide = "buy" | "sell";
 
 export type TimeInForce =
-  | "None"
-  | "Day"
-  | "Gtc"
-  | "Ioc"
-  | "Fok"
-  | "Gtd";
+  | "GTC"
+  | "IOC"
+  | "FOK"
+  | "PO";
 
 export type CashMarginType = "Cash" | "MarginOpen" | "NetOut";
 
 export type QuoteSide = "Ask" | "Bid";
 
-export type OrderType = "Market" | "Limit" | "Stop" | "StopLimit";
+export type OrderType = "market" | "limit";
 
 export type OrderStatus =
-  | "New"
-  | "PartiallyFilled"
-  | "Filled"
-  | "Canceled"
-  | "PendingCancel"
-  | "PendingAmend"
-  | "PendingNew"
-  | "Rejected"
-  | "Expired";
+  | "open"
+  | "closed"
+  | "canceled"
+  | "rejected"
+  | "expired"
+  | "executed";
   
 export type Broker = string;
