@@ -6,6 +6,7 @@
 
 Originally forked from [@bitrinjani/r2](https://github.com/bitrinjani/r2)
 
+![GitHub package.json version](https://img.shields.io/github/package-json/v/nh-chitose/r2-re)
 ![GitHub package.json dependency version (prod)](https://img.shields.io/github/package-json/dependency-version/nh-chitose/r2-re/ccxt)
 [![CodeQL](https://github.com/nh-chitose/r2-re/actions/workflows/codeql.yml/badge.svg)](https://github.com/nh-chitose/r2-re/actions/workflows/codeql.yml)
 [![CI](https://github.com/nh-chitose/r2-re/actions/workflows/test.yml/badge.svg)](https://github.com/nh-chitose/r2-re/actions/workflows/test.yml)
