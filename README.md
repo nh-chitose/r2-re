@@ -19,7 +19,7 @@ R2-re Bitcoin Arbitrager is an automatic arbitrage trading system powered by Nod
 
 __現在プレリリースバージョンを公開中です。実際の取引は行われないテストモードで利益のイメージをつかんで頂けます。__
 
-:warning: 以下の画面等はは古いNode.jsで正常に動作していたときのもので、現在は依存関係のインストールが出来ないためオリジナル版は動作しません！ :warning:
+:warning: 以下の画面等は古いNode.jsで正常に動作していたときのもので、現在は依存関係のインストールが出来ないためオリジナル版は動作しません！ :warning:
 
 ## Web UI モード
 
