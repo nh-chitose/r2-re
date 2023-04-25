@@ -60,7 +60,9 @@ npm install
 * __プレリリース版では設定不要__: デモモードで動かす場合にはこの設定は不要です。
 
 // 6番目・8番目にあるWeb UIモードは現在動作していないので `false` をセットしておいてください。
+
 6. To run R2-re in Web UI mode, set `webGateway.enabled` to true. By default, R2-re starts in Console mode.
+
 7. `npm run start` でアプリを開始する。
 
 ```bash
