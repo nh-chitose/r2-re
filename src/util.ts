@@ -18,12 +18,12 @@ export function min(nums: number[]){
   else return undefined;
 }
 
-export function floor(num: number, precision?: number){
+export function floor(num: number, precision: number = 0){
   const modifier = 10 ** precision;
   return Math.floor(num * modifier) / modifier;
 }
 
-export function round(num: number, precision?: number){
+export function round(num: number, precision: number = 0){
   const modifier = 10 ** precision;
   return Math.round(num * modifier) / modifier;
 }
@@ -76,14 +76,11 @@ export function padEnd(s: ToStringable, n: number): string {
 }
 
 /**
- * @param の数だけハイフンを出力します
+ * widthの数だけハイフンを出力します
+ * @param width 繰り返す回数
  */
 export function hr(width: number): string {
-  let str = "";
-  for(let i = 0; i < width; i++){
-    str += "-";
-  }
-  return str;
+  return "-".repeat(width);
 }
 
 export function almostEqual(a: number, b: number, tolerancePercent: number): boolean {

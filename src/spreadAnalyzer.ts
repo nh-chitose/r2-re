@@ -8,7 +8,6 @@ import type {
   SpreadStat
 } from "./types";
 
-
 import Decimal from "decimal.js";
 import { injectable, inject } from "inversify";
 
@@ -43,11 +42,11 @@ export default class SpreadAnalyzer {
     let filteredQuotes = sortArrayBy(
       quotes
         .filter(q => this.isAllowedByCurrentPosition(q, positionMap[q.broker]))
-        /*.filter(q => new Decimal(q.volume).gte(
+        .filter(q => new Decimal(q.volume).gte(
           (closingPair ? closingPair[0].size : config.minSize)
             * floor(config.maxTargetVolumePercent !== undefined
               ? 100 / config.maxTargetVolumePercent
-              : 1)))*/,
+              : 1))),
       "price"
     );
     if(closingPair){

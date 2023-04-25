@@ -8,7 +8,6 @@
     "./tools/**/*.ts"
   ],
   "exclude": [
-    "./src/**/*.ts",
-    "./test/brokers.old.bak/**/*.ts"
+    "./src/**/*.ts"
   ]
 }

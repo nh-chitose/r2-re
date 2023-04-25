@@ -32,7 +32,6 @@
     "./test",
     "./util",
     "./dist",
-    "**/.*/",
-    "./src/brokers.old.bak"
+    "**/.*/"
   ]
 }

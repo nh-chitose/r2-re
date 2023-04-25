@@ -37,18 +37,7 @@ export class ConfigValidator {
       );
       this.validateBrokerConfigCommon(coincheck);
     }
-
-    const quoine = findBrokerConfig("Quoine");
-    if(this.isEnabled(quoine)){
-      const allowedCashMarginType = ["Cash", "NetOut"];
-      this.throwIf(
-        !allowedCashMarginType.includes(quoine.cashMarginType),
-        "CashMarginType must be Cash or NetOut for Quoine."
-      );
-      this.validateBrokerConfigCommon(quoine);
-    }
   }
-
   private mustBePositive(n: number, name: string): void {
     this.throwIf(n <= 0, `${name} must be positive.`);
   }

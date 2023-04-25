@@ -39,7 +39,7 @@ const debugConsole = {
 
 const basicConsole = {
   type: "pattern",
-  pattern: "%[%x{level}%] %m",
+  pattern: "%[%r%] %[%x{level}%] %m",
   tokens,
 };
 
@@ -56,15 +56,17 @@ if(debug){
         type: "file",
         filename: path.join(process.cwd(), "logs/debug.log"),
         layout: fileLayout,
-        maxLogSize: 10485760,
+        maxLogSize: 25 * 1024 * 1024,
         backups: 3,
+        keepFileExt: true,
       },
       err: {
         type: "file",
         filename: path.join(process.cwd(), "logs/error.log"),
         layout: fileLayout,
-        maxLogSize: 10485760,
+        maxLogSize: 25 * 1024 * 1024,
         backups: 3,
+        keepFileExt: true,
       },
       wrapErr: {
         type: "logLevelFilter",
@@ -91,15 +93,17 @@ if(debug){
         type: "file",
         filename: path.join(process.cwd(), "logs/info.log"),
         layout: fileLayout,
-        maxLogSize: 10485760,
+        maxLogSize: 25 * 1024 * 1024,
         backups: 3,
+        keepFileExt: true,
       },
       err: {
         type: "file",
         filename: path.join(process.cwd(), "logs/error.log"),
         layout: fileLayout,
-        maxLogSize: 10485760,
+        maxLogSize: 25 * 1024 * 1024,
         backups: 3,
+        keepFileExt: true,
       },
       wrapErr: {
         type: "logLevelFilter",

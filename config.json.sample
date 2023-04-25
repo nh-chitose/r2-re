@@ -1,20 +1,22 @@
 {
   "language": "en",
-  "debug": true,
-  "demoMode": true,
+  "debug": false,
+  "demoMode": false,
   "symbol": "BTC/JPY",
-  "priceMergeSize": 100,
-  "maxSize": 0.01,
-  "minSize": 0.01,
+  "priceMergeSize": 0.001,
+  "maxSize": 0.3,
+  "minSize": 0.0001,
   "minTargetProfit": 1,
   "minExitTargetProfit": 20,
-  "minTargetProfitPercent": 1.0,
+  "minExitTargetProfitPercent": 0.1,
+  "minTargetProfitPercent": 0.03,
   "exitNetProfitRatio": 20,
-  "maxTargetVolumePercent": 50.0,
-  "iterationInterval": 3000,
+  "maxTargetProfit": 1000,
+  "maxTargetVolumePercent": 100,
+  "iterationInterval": 1500,
   "positionRefreshInterval": 5000,
   "sleepAfterSend": 5000,
-  "maxNetExposure": 0.1,
+  "maxNetExposure": 1,
   "maxRetryCount": 10,
   "orderStatusCheckInterval": 3000,
   "stabilityTracker": {
@@ -41,56 +43,43 @@
   },
   "brokers": [
     {
-      "broker": "Coincheck",
-      "enabled": true,
-      "key": "xxxxxx",
-      "secret": "xxxxxx",
-      "maxLongPosition": 0.15,
-      "maxShortPosition": 0.15,
-      "cashMarginType": "NetOut",
-      "commissionPercent": 0
-    },
-    {
       "broker": "Bitflyer",
       "enabled": true,
-      "key": "xxxxxx",
-      "secret": "xxxxxx",
-      "maxLongPosition": 0.03,
-      "maxShortPosition": 0,
+      "maxLongPosition": 0.3,
+      "maxShortPosition": 0.3,
       "cashMarginType": "Cash",
       "commissionPercent": 0,
       "noTradePeriods": [["04:00", "04:15"]]
     },
     {
-      "broker": "Quoine",
+      "broker": "Coincheck",
       "enabled": true,
-      "key": "xxxxxx",
-      "secret": "xxxxxx",
-      "maxLongPosition": 0.15,
-      "maxShortPosition": 0.15,
-      "cashMarginType": "NetOut",
-      "leverageLevel": 10,
+      "maxLongPosition": 0.3,
+      "maxShortPosition": 0.3,
+      "cashMarginType": "Cash",
       "commissionPercent": 0
     },
     {
-      "broker": "Bitbankcc",
-      "npmPath": "@bitr/bitbankcc",
+      "broker": "Bitbank",
       "enabled": true,
-      "key": "xxxxxx",
-      "secret": "xxxxxxx",
-      "maxLongPosition": 0.03,
-      "maxShortPosition": 0,
+      "maxLongPosition": 0.3,
+      "maxShortPosition": 0.3,
       "cashMarginType": "Cash",
       "commissionPercent": 0
     },
     {
       "broker": "Btcbox",
-      "npmPath": "@bitr/btcbox",
       "enabled": true,
-      "key": "xxxxxx",
-      "secret": "xxxxxxx",
-      "maxLongPosition": 0.03,
-      "maxShortPosition": 0,
+      "maxLongPosition": 0.3,
+      "maxShortPosition": 0.3,
+      "cashMarginType": "Cash",
+      "commissionPercent": 0
+    },
+    {
+      "broker": "Zaif",
+      "enabled": true,
+      "maxLongPosition": 0.3,
+      "maxShortPosition": 0.3,
       "cashMarginType": "Cash",
       "commissionPercent": 0
     }
@@ -98,14 +87,12 @@
   "logging": {
     "slack": {
       "enabled": false,
-      "url": "https://hooks.slack.com/services/xxxxxx",
       "channel": "#ch1",
       "username": "abc",
       "keywords": ["error", "profit"]
     },
     "line": {
       "enabled": false,
-      "token": "TOKEN",
       "keywords": ["error", "profit"]
     }
   }

@@ -13,10 +13,10 @@ import { toQuote } from "../util";
 const { demoMode, symbol } = getConfig();
 let keys: object;
 
-if(process.env.COINCHECK_TOKEN && process.env.COINCHECK_SECRET){
+if(process.env.ZAIF_TOKEN && process.env.ZAIF_SECRET){
   keys = {
-    apiKey: process.env.COINCHECK_TOKEN,
-    secret: process.env.COINCHECK_SECRET,
+    apiKey: process.env.ZAIF_TOKEN,
+    secret: process.env.ZAIF_SECRET,
   };
 }else{
   keys = {};
@@ -24,7 +24,7 @@ if(process.env.COINCHECK_TOKEN && process.env.COINCHECK_SECRET){
 
 async function main(envs: object) {
   // eslint-disable-next-line new-cap
-  const base = new ccxt.coincheck(envs);
+  const base = new ccxt.zaif(envs);
   return base;
 }
 
@@ -33,7 +33,7 @@ export function create(config: BrokerConfigType){
 }
 
 export default class BrokerAdapterImpl /*implements BrokerAdapter*/ {
-  readonly broker = "Coincheck";
+  readonly broker = "Zaif";
   private readonly logger = getLogger(`${this.broker}Adapter`);
   private readonly api = main(keys);
 
