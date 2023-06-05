@@ -29,7 +29,7 @@
     "core-decorators": "^0.20.0",
     "date-fns": "^2.30.0",
     "decimal.js": "^10.4.3",
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.1.4",
     "express": "^4.16.2",
     "fast-json-parse": "^1.0.3",
     "i18next": "^22.4.15",
