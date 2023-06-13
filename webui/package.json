@@ -28,7 +28,7 @@
     "reconnecting-websocket": "^3.2.2",
     "rxjs": "^6.6.7",
     "rxjs-compat": "^6.6.7",
-    "zone.js": "^0.13.0"
+    "zone.js": "^0.13.1"
   },
   "devDependencies": {
     "@angular-eslint/builder": "16.0.1",
