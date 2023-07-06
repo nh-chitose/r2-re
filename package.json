@@ -25,7 +25,7 @@
     "@bitr/awaitable-event-emitter": "^1.0.3",
     "@sinclair/typebox": "^0.28.10",
     "abstract-level": "^1.0.3",
-    "ccxt": "^3.0.105",
+    "ccxt": "^4.0.9",
     "core-decorators": "^0.20.0",
     "date-fns": "^2.30.0",
     "decimal.js": "^10.4.3",
