@@ -78,7 +78,7 @@
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-named-import-spacing": "^1.0.3",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-unused-imports": "^2.0.0",
+    "eslint-plugin-unused-imports": "^3.0.0",
     "mocha": "^10.2.0",
     "nock": "^13.3.1",
     "rimraf": "^5.0.0",
